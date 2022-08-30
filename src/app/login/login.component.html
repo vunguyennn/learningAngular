@@ -4,4 +4,4 @@
   <input type="password" name="password" [(ngModel)]="password" />
   <button (click)="handleLogin()">Login</button>
 </body>
-<p *ngIf="validLogin">{{ errorMessage }}</p>
+<p *ngIf="invalidLogin">{{ errorMessage }}</p>
