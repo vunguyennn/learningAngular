@@ -18,11 +18,18 @@ export class LoginComponent implements OnInit {
 
   handleLogin() {
     // console.log(this.username);
-    if (this.username === 'VuNguyen' && this.password === '123') {
-      this.router.navigate(['welcome']);
-      this.invalidLogin = false;
-    } else {
-      this.invalidLogin = true;
+    // if (this.username === 'VuNguyen' && this.password === '123') {
+    //   this.router.navigate(['welcome']);
+    //   this.invalidLogin = false;
+    // } else {
+    //   this.invalidLogin = true;
+    // }
+    this.invalidLogin = !(
+      this.username === 'VuNguyen' && this.password === '123'
+    );
+
+    if (!this.invalidLogin) {
+      this.router.navigate(['welcome', this.username]);
     }
   }
 }

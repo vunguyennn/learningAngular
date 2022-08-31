@@ -1,0 +1,20 @@
+<table border="1">
+  <caption>
+    Genshin Wiki
+  </caption>
+  <thead>
+    <tr>
+      <th>ID</th>
+      <th>Description</th>
+      <th>Obtain</th>
+    </tr>
+  </thead>
+  <tbody>
+    <!-- for (Todo todo: todos) -->
+    <tr *ngFor="let todo of todos">
+      <td>{{ todo.id }}</td>
+      <td>{{ todo.description }}</td>
+      <td>{{ todo.done }}</td>
+    </tr>
+  </tbody>
+</table>
