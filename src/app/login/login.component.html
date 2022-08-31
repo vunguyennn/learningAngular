@@ -1,7 +1,8 @@
+<p>Please login for a better experience.</p>
 <body>
   User Name:
   <input type="text" name="username" [(ngModel)]="username" /> Password :
   <input type="password" name="password" [(ngModel)]="password" />
   <button (click)="handleLogin()">Login</button>
 </body>
-<p *ngIf="invalidLogin">{{ errorMessage }}</p>
+<p *ngIf="invalidLogin">{{ errorMessageLogin }}</p>
