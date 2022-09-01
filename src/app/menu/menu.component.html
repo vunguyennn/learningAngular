@@ -46,14 +46,14 @@
   <span>My App</span>
   <span class="example-spacer"></span>
   <ul>
-    <a *ngIf="!HardcodedAuthenticationService.isUserLoggedIn()" routerLink="/"
+    <a *ngIf="!(isUserLoggedIn$ | async)" routerLink="/"
       >Login</a
     >
     <!-- <a *ngIf="!isUserLoggedIn" routerLink="/login">Login</a> -->
   </ul>
   <ul>
     <a
-      *ngIf="HardcodedAuthenticationService.isUserLoggedIn()"
+      *ngIf="isUserLoggedIn$ | async"
       routerLink="/logout"
       >Logout</a
     >
