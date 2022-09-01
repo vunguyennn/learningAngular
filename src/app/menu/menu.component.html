@@ -49,6 +49,7 @@
     <a *ngIf="!HardcodedAuthenticationService.isUserLoggedIn()" routerLink="/"
       >Login</a
     >
+    <!-- <a *ngIf="!isUserLoggedIn" routerLink="/login">Login</a> -->
   </ul>
   <ul>
     <a
@@ -56,5 +57,6 @@
       routerLink="/logout"
       >Logout</a
     >
+    <!-- <a *ngIf="isUserLoggedIn" routerLink="/logout">Logout</a> -->
   </ul>
 </mat-toolbar>
