@@ -46,17 +46,11 @@
   <span>My App</span>
   <span class="example-spacer"></span>
   <ul>
-    <a *ngIf="!(isUserLoggedIn$ | async)" routerLink="/"
-      >Login</a
-    >
+    <a *ngIf="!(isUserLoggedIn$ | async)" routerLink="/">Login</a>
     <!-- <a *ngIf="!isUserLoggedIn" routerLink="/login">Login</a> -->
   </ul>
   <ul>
-    <a
-      *ngIf="isUserLoggedIn$ | async"
-      routerLink="/logout"
-      >Logout</a
-    >
+    <a *ngIf="isUserLoggedIn$ | async" routerLink="/logout">Logout</a>
     <!-- <a *ngIf="isUserLoggedIn" routerLink="/logout">Logout</a> -->
   </ul>
 </mat-toolbar>

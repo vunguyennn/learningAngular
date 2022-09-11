@@ -1,5 +1,11 @@
 import { Component, OnInit } from '@angular/core';
+import {
+  MatSnackBar,
+  MatSnackBarHorizontalPosition,
+  MatSnackBarVerticalPosition,
+} from '@angular/material/snack-bar';
 import { Router } from '@angular/router';
+import { firstValueFrom } from 'rxjs';
 import { HardcodedAuthenticationService } from '../service/hardcoded-authentication.service';
 
 @Component({
@@ -8,43 +14,46 @@ import { HardcodedAuthenticationService } from '../service/hardcoded-authenticat
   styleUrls: ['./login.component.css'],
 })
 export class LoginComponent implements OnInit {
-  username = 'VuNguyen';
-  password = '';
+  username = 'vunguyen';
+  password = '123456';
   errorMessageLogin = 'Invalid username or password';
   invalidLogin = false;
   hide = true;
+  horizontalPosition: MatSnackBarHorizontalPosition = 'start';
+  verticalPosition: MatSnackBarVerticalPosition = 'bottom';
 
   constructor(
     private router: Router,
-    private hardcodedAuthenticationService: HardcodedAuthenticationService
+    private hardcodedAuthenticationService: HardcodedAuthenticationService,
+    private snackBar: MatSnackBar
   ) {}
 
   ngOnInit(): void {}
 
-  handleLogin() {
-    // console.log(this.username);
-    // if (this.username === 'VuNguyen' && this.password === '123') {
-    //   this.router.navigate(['welcome']);
-    //   this.invalidLogin = false;
-    // } else {
-    //   this.invalidLogin = true;
-    // }
-    if (
-      this.hardcodedAuthenticationService.authenticate(
-        this.username,
-        this.password
-      )
-    ) {
-      // this.invalidLogin = !(
-      //   this.username === 'VuNguyen' && this.password === '123'
-      // );
-      this.router.navigate(['welcome', this.username]);
-      this.invalidLogin = false;
-    } else {
-      this.invalidLogin = true;
+  async handleLogin() {
+    try {
+      const loggedIn: boolean =
+        await this.hardcodedAuthenticationService.authenticate(
+          this.username,
+          this.password
+        );
+
+      this.snackBar.open(loggedIn ? 'ok' : 'no ok', undefined, {
+        horizontalPosition: this.horizontalPosition,
+        verticalPosition: this.verticalPosition,
+      });
+
+      if (loggedIn) {
+        this.router.navigate(['welcome', this.username]);
+        this.invalidLogin = false;
+      } else {
+        this.invalidLogin = true;
+      }
+    } catch (e) {
+      this.snackBar.open('Invalid username or password', undefined, {
+        horizontalPosition: this.horizontalPosition,
+        verticalPosition: this.verticalPosition,
+      });
     }
   }
-  // if (!this.invalidLogin) {
-  //   this.router.navigate(['welcome', this.username]);
-  // }
 }

@@ -1,30 +1,26 @@
-import { Component, OnInit } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
+import { Component, OnInit, ViewChild } from '@angular/core';
 
-// export class Todo {
-//   constructor(
-//     public id: number,
-//     public description: string,
-//     public done: boolean
-//   ) {}
-// }
-export interface PeriodicElement {
+import { MatDialog } from '@angular/material/dialog';
+import { MatPaginator } from '@angular/material/paginator';
+import {
+  MatSnackBar,
+  MatSnackBarHorizontalPosition,
+  MatSnackBarVerticalPosition,
+} from '@angular/material/snack-bar';
+import { MatSort } from '@angular/material/sort';
+import { MatTableDataSource } from '@angular/material/table';
+import { firstValueFrom, tap } from 'rxjs';
+import { DialogComponent } from '../dialog/dialog.component';
+import { ApiService, Character } from '../services/api.service';
+import { MatIcon } from '@angular/material/icon';
+import { FormGroup } from '@angular/forms';
+import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
+
+export interface DialogData {
+  animal: string;
   name: string;
-  position: number;
-  weight: number;
-  symbol: string;
 }
-const ELEMENT_DATA: PeriodicElement[] = [
-  { position: 1, name: 'Hydrogen', weight: 1.0079, symbol: 'H' },
-  { position: 2, name: 'Helium', weight: 4.0026, symbol: 'He' },
-  { position: 3, name: 'Lithium', weight: 6.941, symbol: 'Li' },
-  { position: 4, name: 'Beryllium', weight: 9.0122, symbol: 'Be' },
-  { position: 5, name: 'Boron', weight: 10.811, symbol: 'B' },
-  { position: 6, name: 'Carbon', weight: 12.0107, symbol: 'C' },
-  { position: 7, name: 'Nitrogen', weight: 14.0067, symbol: 'N' },
-  { position: 8, name: 'Oxygen', weight: 15.9994, symbol: 'O' },
-  { position: 9, name: 'Fluorine', weight: 18.9984, symbol: 'F' },
-  { position: 10, name: 'Neon', weight: 20.1797, symbol: 'Ne' },
-];
 
 @Component({
   selector: 'app-list-todos',
@@ -32,18 +28,137 @@ const ELEMENT_DATA: PeriodicElement[] = [
   styleUrls: ['./list-todos.component.css'],
 })
 export class ListTodosComponent implements OnInit {
-  displayedColumns: string[] = ['position', 'name', 'weight', 'symbol'];
-  dataSource = ELEMENT_DATA;
-  // todos = [
-  //   new Todo(1, 'Kaedehara Kazuha', true),
-  //   new Todo(2, 'Sangonomiya Kokomi', false),
-  //   new Todo(3, 'Kamisato Ayaka', true),
+  title = 'token-interceptor';
+  result = {};
+  horizontalPosition: MatSnackBarHorizontalPosition = 'start';
+  verticalPosition: MatSnackBarVerticalPosition = 'bottom';
 
-  //   // { id: 1, description: 'Kaedehara Kazuha' },
-  //   // { id: 2, description: 'Sangonomiya Kokomi' },
-  //   // { id: 3, description: 'Kamisato Ayaka' },
-  // ];
-  constructor() {}
+  @ViewChild(MatPaginator) paginator!: MatPaginator;
+  @ViewChild(MatSort) sort!: MatSort;
+  productForm!: FormGroup;
+  dialogRef: any;
+  dialogRef2: any;
 
-  ngOnInit(): void {}
+  ngAfterViewInit() {
+    this.dataSource.paginator = this.paginator;
+  }
+  displayedColumns: string[] = ['name', 'element', 'action'];
+  chars: Character[] = [];
+  dataSource = new MatTableDataSource();
+
+  applyFilter(event: Event) {
+    const filterValue = (event.target as HTMLInputElement).value;
+    this.dataSource.filter = filterValue.trim().toLowerCase();
+  }
+
+  constructor(
+    public dialog: MatDialog,
+    private api: ApiService,
+    http: HttpClient,
+    private snackBar: MatSnackBar
+  ) {
+    const path = 'https://pendo-api.herokuapp.com/api/char';
+    this.result = http.get(path);
+  }
+
+  async ngOnInit(): Promise<void> {
+    // this.api
+    //   .getCharacters()
+    //   .pipe(
+    //     tap((chars) => {
+    //       this.chars = chars;
+    //       console.log('😎 ~ this.chars', this.chars);
+    //       this.dataSource.data = this.chars;
+    //     })
+    //   )
+    //   .subscribe();
+
+    // OR
+    this.chars = await firstValueFrom(this.api.getCharacters());
+    this.dataSource.data = this.chars;
+  }
+
+  openDialog(): void {
+    const dialogRef = this.dialog.open(DialogComponent, {
+      width: '250px',
+    });
+
+    dialogRef.afterClosed().subscribe((result) => {
+      this.api
+        .getCharacters()
+        .pipe(
+          tap((chars) => {
+            this.chars = chars;
+            this.dataSource.data = this.chars;
+          })
+        )
+        .subscribe();
+    });
+  }
+
+  updateCharacter(element: Character) {
+    const dialogRef2 = this.dialog.open(DialogComponent, {
+      width: '250px',
+      data: element,
+    });
+    dialogRef2.afterClosed().subscribe((result) => {
+      this.api
+        .getCharacters()
+        .pipe(
+          tap((chars) => {
+            this.chars = chars;
+            this.dataSource.data = this.chars;
+          })
+        )
+        .subscribe();
+    }); // this.api.updateCharacter(character).subscribe({
+    //   next: (res) => {
+    //     this.snackBar.open(
+    //       'Deleted ' + element + ' successfully !!!',
+    //       '🤑🤑🤑',
+    //       {
+    //         horizontalPosition: this.horizontalPosition,
+    //         verticalPosition: this.verticalPosition,
+    //       }
+    //     );
+
+    //     this.api
+    //       .getCharacters()
+    //       .pipe(
+    //         tap((chars) => {
+    //           this.chars = chars;
+    //           this.dataSource.data = this.chars;
+    //         })
+    //       )
+    //       .subscribe();
+    //   },
+    //   error: () => {
+    //     alert('Failed');
+    //   },
+    // });
+  }
+
+  deleteCharacter(name: string) {
+    this.api.deleteCharacter(name).subscribe({
+      next: (res) => {
+        this.snackBar.open('Deleted ' + name + ' successfully !!!', '🤑🤑🤑', {
+          horizontalPosition: this.horizontalPosition,
+          verticalPosition: this.verticalPosition,
+        });
+
+        this.api
+          .getCharacters()
+          .pipe(
+            tap((chars) => {
+              this.chars = chars;
+              this.dataSource.data = this.chars;
+            })
+          )
+          .subscribe();
+      },
+      error: () => {
+        alert('Failed');
+      },
+    });
+  }
 }
