@@ -23,26 +23,15 @@ export class ApiService {
   constructor(private http: HttpClient) {}
 
   getCharacters(): Observable<Character[]> {
-    return this.http.get<Character[]>(
-      // 'https://pendo-api.herokuapp.com/api/char'
-      'api/char'
-    );
+    return this.http.get<Character[]>('api/char');
   }
 
   postCharacter(character: Character) {
-    return this.http.post<Character[]>(
-      // 'https://pendo-api.herokuapp.com/api/char',
-      'api/char',
-      character
-    );
+    return this.http.post<Character[]>('api/char', character);
   }
 
   updateCharacter(character: Character) {
-    return this.http.patch<Character[]>(
-      // 'https://pendo-api.herokuapp.com/api/char',
-      'api/char',
-      character
-    );
+    return this.http.patch<Character[]>('api/char', character);
   }
 
   deleteCharacter(name: string) {

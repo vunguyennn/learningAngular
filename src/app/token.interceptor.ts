@@ -10,7 +10,6 @@ import { Observable } from 'rxjs';
 @Injectable()
 export class TokenInterceptor implements HttpInterceptor {
   constructor() {}
-  baseUrl = 'https://pendo-api.herokuapp.com';
 
   intercept(
     request: HttpRequest<any>,
