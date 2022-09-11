@@ -1,33 +1,37 @@
 import { Injectable } from '@angular/core';
-import { Observable, Subject } from 'rxjs';
+import { BehaviorSubject, firstValueFrom, Observable, Subject } from 'rxjs';
+import { ApiService, LoginRes } from '../services/api.service';
 
 @Injectable({
   providedIn: 'root',
 })
 export class HardcodedAuthenticationService {
-  logedIn$ = new Subject<boolean>();
+  loggedIn$ = new BehaviorSubject<boolean>(false);
 
-  constructor() {}
+  constructor(private api: ApiService) {}
 
-  authenticate(username: string, password: string) {
-    if (username === 'VuNguyen' && password === '123') {
+  async authenticate(username: string, password: string) {
+    const loginRes = await firstValueFrom(
+      this.api.login({ username, password })
+    );
+
+    if (loginRes.valid) {
       sessionStorage.setItem('authenticateUser', username);
-      this.logedIn$.next(true);
+      this.loggedIn$.next(true);
       return true;
     }
 
-    this.logedIn$.next(false);
+    this.loggedIn$.next(false);
     return false;
   }
 
   isUserLoggedIn() {
     const user = sessionStorage.getItem('authenticateUser');
-    this.logedIn$.next(!!user);
-    return !(user == null);
+    this.loggedIn$.next(!!user);
   }
 
   logout() {
     sessionStorage.removeItem('authenticateUser');
-    this.logedIn$.next(false);
+    this.loggedIn$.next(false);
   }
 }

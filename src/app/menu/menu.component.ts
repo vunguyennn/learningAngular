@@ -12,11 +12,11 @@ export class MenuComponent implements OnInit {
   isUserLoggedIn$!: Observable<boolean>;
 
   constructor(
-    public HardcodedAuthenticationService: HardcodedAuthenticationService
+    private HardcodedAuthenticationService: HardcodedAuthenticationService
   ) {}
 
   ngOnInit(): void {
-    this.isUserLoggedIn$ = this.HardcodedAuthenticationService.logedIn$;
+    this.isUserLoggedIn$ = this.HardcodedAuthenticationService.loggedIn$;
   }
 
   public onToggleSidenav = () => {};

@@ -1,0 +1,29 @@
+<h1 mat-dialog-title>{{ dialogTitle }}</h1>
+<form [formGroup]="productForm">
+  <div class="example-container">
+    <mat-form-field appearance="fill">
+      <mat-label>Character name</mat-label>
+      <input formControlName="name" matInput #input placeholder="Razor" />
+    </mat-form-field>
+  </div>
+
+  <mat-form-field appearance="fill">
+    <mat-label>Element</mat-label>
+    <mat-select formControlName="element">
+      <mat-option value="anemo">anemo</mat-option>
+      <mat-option value="pyro">pyro</mat-option>
+      <mat-option value="cryo">cryo</mat-option>
+      <mat-option value="hydro">hydro</mat-option>
+      <mat-option value="electro">electro</mat-option>
+      <mat-option value="dendro">dendro</mat-option>
+      <mat-option value="geo">geo</mat-option>
+    </mat-select>
+  </mat-form-field>
+
+  <div mat-dialog-actions [align]="'end'">
+    <button mat-raised-button color="warn" mat-dialog-close>Close</button>
+    <button mat-raised-button color="primary" (click)="addCharacter()">
+      {{ actionBtn }}
+    </button>
+  </div>
+</form>

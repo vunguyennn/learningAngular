@@ -17,7 +17,6 @@ const routes: Routes = [
   { path: 'todos', component: ListTodosComponent },
   { path: 'login', component: LoginComponent },
   { path: 'logout', component: LogoutComponent },
-
   { path: '**', component: ErrorComponent },
 ];
 

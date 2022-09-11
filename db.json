@@ -1,0 +1,31 @@
+{
+  "productList": [
+    {
+      "productName": "2112",
+      "element": "",
+      "id": 1
+    },
+    {
+      "productName": "1231321",
+      "element": "",
+      "id": 2
+    },
+    {
+      "productName": "",
+      "element": "",
+      "id": 3
+    },
+    {
+      "productName": "",
+      "element": "",
+      "id": 4
+    }
+  ],
+  "comments": [
+    {
+      "id": 1,
+      "body": "some comment",
+      "postId": 1
+    }
+  ]
+}

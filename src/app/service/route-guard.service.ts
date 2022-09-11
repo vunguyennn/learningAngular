@@ -7,6 +7,7 @@ import {
   RouterStateSnapshot,
   UrlTree,
 } from '@angular/router';
+import { first, firstValueFrom, tap } from 'rxjs';
 import { HardcodedAuthenticationService } from './hardcoded-authentication.service';
 
 @Injectable({
@@ -18,8 +19,12 @@ export class RouteGuardService implements CanActivate {
     public hardcodedAuthenticationService: HardcodedAuthenticationService
   ) {}
 
-  canActivate(route: ActivatedRouteSnapshot, state: RouterStateSnapshot) {
-    if (this.hardcodedAuthenticationService.isUserLoggedIn()) {
+  async canActivate(route: ActivatedRouteSnapshot, state: RouterStateSnapshot) {
+    if (
+      await firstValueFrom(
+        this.hardcodedAuthenticationService.loggedIn$.pipe(first())
+      )
+    ) {
       return true;
     } else {
       this.router.navigate(['login']);

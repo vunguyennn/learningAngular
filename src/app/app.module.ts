@@ -1,5 +1,5 @@
 import { NgModule } from '@angular/core';
-import { FormsModule } from '@angular/forms';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { BrowserModule } from '@angular/platform-browser';
 
 import { AppRoutingModule } from './app-routing.module';
@@ -20,7 +20,17 @@ import { MatTableModule } from '@angular/material/table';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatCardModule } from '@angular/material/card';
 import { LogoutComponent } from './logout/logout.component';
-
+import { MatDialogModule } from '@angular/material/dialog';
+import { DialogComponent } from './dialog/dialog.component';
+import { MatOptionModule } from '@angular/material/core';
+import { MatSelectModule } from '@angular/material/select';
+import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
+import { TokenInterceptor } from './token.interceptor';
+import { MatPaginatorModule } from '@angular/material/paginator';
+import {
+  MatSnackBarModule,
+  MAT_SNACK_BAR_DEFAULT_OPTIONS,
+} from '@angular/material/snack-bar';
 @NgModule({
   declarations: [
     AppComponent,
@@ -31,6 +41,7 @@ import { LogoutComponent } from './logout/logout.component';
     MenuComponent,
     FooterComponent,
     LogoutComponent,
+    DialogComponent,
   ],
   imports: [
     BrowserModule,
@@ -45,8 +56,18 @@ import { LogoutComponent } from './logout/logout.component';
     MatTableModule,
     MatFormFieldModule,
     MatCardModule,
+    MatDialogModule,
+    MatOptionModule,
+    MatSelectModule,
+    ReactiveFormsModule,
+    HttpClientModule,
+    MatPaginatorModule,
+    MatSnackBarModule,
   ],
-  providers: [],
+  providers: [
+    { provide: HTTP_INTERCEPTORS, useClass: TokenInterceptor, multi: true },
+    { provide: MAT_SNACK_BAR_DEFAULT_OPTIONS, useValue: { duration: 2000 } },
+  ],
   bootstrap: [AppComponent],
 })
 export class AppModule {}
