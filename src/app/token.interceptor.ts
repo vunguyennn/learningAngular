@@ -12,11 +12,12 @@ export class TokenInterceptor implements HttpInterceptor {
   constructor() {}
 
   intercept(
-    request: HttpRequest<unknown>,
+    request: HttpRequest<any>,
     next: HttpHandler
-  ): Observable<HttpEvent<unknown>> {
+  ): Observable<HttpEvent<any>> {
     const newRequest = request.clone({
       // params: request.params.append('token', 'hi-there'),
+      url: `https://pendo-api.herokuapp.com/${request.url}`,
     });
     return next.handle(newRequest);
   }
