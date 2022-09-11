@@ -24,32 +24,32 @@ export class ApiService {
 
   getCharacters(): Observable<Character[]> {
     return this.http.get<Character[]>(
-      'https://pendo-api.herokuapp.com/api/char'
+      // 'https://pendo-api.herokuapp.com/api/char'
+      'api/char'
     );
   }
 
   postCharacter(character: Character) {
     return this.http.post<Character[]>(
-      'https://pendo-api.herokuapp.com/api/char',
+      // 'https://pendo-api.herokuapp.com/api/char',
+      'api/char',
       character
     );
   }
 
   updateCharacter(character: Character) {
     return this.http.patch<Character[]>(
-      'https://pendo-api.herokuapp.com/api/char',
+      // 'https://pendo-api.herokuapp.com/api/char',
+      'api/char',
       character
     );
   }
 
   deleteCharacter(name: string) {
-    return this.http.delete(`https://pendo-api.herokuapp.com/api/char/${name}`);
+    return this.http.delete(`api/char/${name}`);
   }
 
   login(account: Account) {
-    return this.http.post<LoginRes>(
-      'https://pendo-api.herokuapp.com/api/login',
-      account
-    );
+    return this.http.post<LoginRes>('api/login', account);
   }
 }
