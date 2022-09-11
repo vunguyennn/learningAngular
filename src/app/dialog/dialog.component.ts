@@ -2,8 +2,6 @@ import { Component, OnInit, Inject } from '@angular/core';
 import { FormGroup, FormBuilder, Validator, Validators } from '@angular/forms';
 import { ApiService, Character } from '../services/api.service';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
-import { tap } from 'rxjs';
-import { ListTodosComponent } from '../list-todos/list-todos.component';
 import { MatTableDataSource } from '@angular/material/table';
 import {
   MatSnackBar,
@@ -54,17 +52,29 @@ export class DialogComponent implements OnInit {
   addCharacter() {
     this.api.postCharacter(this.productForm.getRawValue()).subscribe({
       next: (res) => {
-        if (this.actionBtn != 'Save') {
-          this.snackBar.open('Updated successfully !!!', '🤑🤑🤑', {
+        // if (this.actionBtn != 'Save') {
+        //   this.snackBar.open('Updated successfully !!!', '🤑🤑🤑', {
+        //     horizontalPosition: this.horizontalPosition,
+        //     verticalPosition: this.verticalPosition,
+        //   });
+        // } else {
+        //   this.snackBar.open('Created successfully !!!', '🤑🤑🤑', {
+        //     horizontalPosition: this.horizontalPosition,
+        //     verticalPosition: this.verticalPosition,
+        //   });
+        // }
+
+        this.snackBar.open(
+          `${
+            this.actionBtn != 'Save' ? 'Updated' : 'Created'
+          } successfully !!!`,
+          '🤑🤑🤑',
+          {
             horizontalPosition: this.horizontalPosition,
             verticalPosition: this.verticalPosition,
-          });
-        } else {
-          this.snackBar.open('Created successfully !!!', '🤑🤑🤑', {
-            horizontalPosition: this.horizontalPosition,
-            verticalPosition: this.verticalPosition,
-          });
-        }
+          }
+        );
+
         this.dialogRef.close();
       },
       error: () => {

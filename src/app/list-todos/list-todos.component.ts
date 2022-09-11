@@ -111,31 +111,7 @@ export class ListTodosComponent implements OnInit {
           })
         )
         .subscribe();
-    }); // this.api.updateCharacter(character).subscribe({
-    //   next: (res) => {
-    //     this.snackBar.open(
-    //       'Deleted ' + element + ' successfully !!!',
-    //       '🤑🤑🤑',
-    //       {
-    //         horizontalPosition: this.horizontalPosition,
-    //         verticalPosition: this.verticalPosition,
-    //       }
-    //     );
-
-    //     this.api
-    //       .getCharacters()
-    //       .pipe(
-    //         tap((chars) => {
-    //           this.chars = chars;
-    //           this.dataSource.data = this.chars;
-    //         })
-    //       )
-    //       .subscribe();
-    //   },
-    //   error: () => {
-    //     alert('Failed');
-    //   },
-    // });
+    });
   }
 
   deleteCharacter(name: string) {

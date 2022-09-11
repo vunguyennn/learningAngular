@@ -1,6 +1,5 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
-import { DialogComponent } from './dialog/dialog.component';
 import { ErrorComponent } from './error/error.component';
 import { ListTodosComponent } from './list-todos/list-todos.component';
 import { LoginComponent } from './login/login.component';
@@ -18,7 +17,6 @@ const routes: Routes = [
   { path: 'todos', component: ListTodosComponent },
   { path: 'login', component: LoginComponent },
   { path: 'logout', component: LogoutComponent },
-  { path: 'dialog', component: DialogComponent },
   { path: '**', component: ErrorComponent },
 ];
 
