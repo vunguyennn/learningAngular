@@ -1,34 +1,82 @@
-<p>Please login for a better experience.</p>
+<img
+  class="text-center"
+  width="400"
+  height="400"
+  src="/assets/hillichurls.jpg"
+  alt="image"
+/>
 
-<body>
-  <div>
-    <mat-form-field appearance="fill">
-      <mat-label>User Name</mat-label>
-      <input matInput [(ngModel)]="username" />
-    </mat-form-field>
-  </div>
-  <div>
-    <mat-form-field appearance="fill">
-      <mat-label>Enter your password</mat-label>
-      <input
-        matInput
-        [(ngModel)]="password"
-        [type]="hide ? 'password' : 'text'"
-      />
+<div class="d-flex-center">
+  <body class="mt-top-2">
+    <div>
+      <mat-form-field>
+        <mat-label>Username</mat-label>
+        <input matInput [(ngModel)]="username" />
+      </mat-form-field>
+    </div>
+    <div>
+      <mat-form-field>
+        <mat-label>Password</mat-label>
+        <input
+          matInput
+          [(ngModel)]="password"
+          [type]="hide ? 'password' : 'text'"
+        />
+        <button
+          mat-icon-button
+          matSuffix
+          (click)="hide = !hide"
+          [attr.aria-label]="'Hide password'"
+          [attr.aria-pressed]="hide"
+        >
+          <mat-icon>{{ hide ? "visibility_off" : "visibility" }}</mat-icon>
+        </button>
+      </mat-form-field>
+    </div>
+    <div class="mt-top">
       <button
-        mat-icon-button
-        matSuffix
-        (click)="hide = !hide"
-        [attr.aria-label]="'Hide password'"
-        [attr.aria-pressed]="hide"
+        mat-raised-button
+        color="primary"
+        style="float: right"
+        (click)="handleLogin()"
       >
-        <mat-icon>{{ hide ? "visibility_off" : "visibility" }}</mat-icon>
+        Login
       </button>
-    </mat-form-field>
-  </div>
+    </div>
+  </body>
+  <p *ngIf="invalidLogin">{{ errorMessageLogin }}</p>
+</div>
 
-  <button mat-raised-button color="primary" (click)="handleLogin()">
-    Login
-  </button>
-</body>
-<p *ngIf="invalidLogin">{{ errorMessageLogin }}</p>
+<!-- <div class="text-center">
+  <h4 class="text-center">Login form with Validation using Angular Material</h4>
+  <form novalidate class="d-flex-center">
+    <div class="example-container">
+      <div>
+        <mat-form-field>
+          <input matInput placeholder="Email" formControlName="email" />
+          <mat-error> Please enter a valid email address </mat-error>
+          <mat-error> Email is required </mat-error>
+        </mat-form-field>
+      </div>
+      <div class="mt-top-2">
+        <mat-form-field>
+          <input
+            matInput
+            type="password"
+            placeholder="Password"
+            formControlName="password"
+          />
+          <mat-error>
+            Password length must be greater than or equal to 8 and password must
+            contain one or more uppercase , lowercase , numeric and special
+            characters
+          </mat-error>
+          <mat-error> Password is required </mat-error>
+        </mat-form-field>
+      </div>
+      <div class="mt-top">
+        <button>Sign In</button>
+      </div>
+    </div>
+  </form>
+</div> -->

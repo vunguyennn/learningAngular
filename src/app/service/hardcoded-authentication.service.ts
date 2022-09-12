@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { BehaviorSubject, firstValueFrom, Observable, Subject } from 'rxjs';
 import { ApiService, LoginRes } from '../services/api.service';
+import { Router } from '@angular/router';
 
 @Injectable({
   providedIn: 'root',
@@ -8,7 +9,7 @@ import { ApiService, LoginRes } from '../services/api.service';
 export class HardcodedAuthenticationService {
   loggedIn$ = new BehaviorSubject<boolean>(false);
 
-  constructor(private api: ApiService) {}
+  constructor(private api: ApiService, private router: Router) {}
 
   async authenticate(username: string, password: string) {
     const loginRes = await firstValueFrom(
@@ -33,5 +34,6 @@ export class HardcodedAuthenticationService {
   logout() {
     sessionStorage.removeItem('authenticateUser');
     this.loggedIn$.next(false);
+    this.router.navigate(['login']);
   }
 }

@@ -1,6 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { Component, OnInit, ViewChild } from '@angular/core';
 
+import { FormGroup } from '@angular/forms';
 import { MatDialog } from '@angular/material/dialog';
 import { MatPaginator } from '@angular/material/paginator';
 import {
@@ -10,12 +11,9 @@ import {
 } from '@angular/material/snack-bar';
 import { MatSort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
-import { firstValueFrom, tap } from 'rxjs';
+import { firstValueFrom, forkJoin, map, tap } from 'rxjs';
 import { DialogComponent } from '../dialog/dialog.component';
-import { ApiService, Character } from '../services/api.service';
-import { MatIcon } from '@angular/material/icon';
-import { FormGroup } from '@angular/forms';
-import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
+import { ApiService, Character, Element } from '../services/api.service';
 
 export interface DialogData {
   animal: string;
@@ -45,6 +43,7 @@ export class ListTodosComponent implements OnInit {
   displayedColumns: string[] = ['name', 'element', 'action'];
   chars: Character[] = [];
   dataSource = new MatTableDataSource();
+  elements: Element[] = [];
 
   applyFilter(event: Event) {
     const filterValue = (event.target as HTMLInputElement).value;
@@ -74,63 +73,100 @@ export class ListTodosComponent implements OnInit {
     //   .subscribe();
 
     // OR
-    this.chars = await firstValueFrom(this.api.getCharacters());
-    this.dataSource.data = this.chars;
+    // this.chars = await firstValueFrom(this.api.getCharacters());
+
+    // https://www.learnrxjs.io/learn-rxjs/operators/combination/forkjoin
+    // MUST read
+    forkJoin([this.api.getCharacters(), this.api.getElement()])
+      .pipe(
+        map(([characters, elements]) => {
+          this.elements = elements;
+
+          return characters.map((char) => {
+            const element = elements.find((el) => char.element === el.id);
+            return {
+              ...char,
+              elementName: element?.name,
+            };
+          });
+        }),
+        tap((characters) => {
+          this.chars = characters;
+          this.dataSource.data = this.chars;
+        })
+      )
+      .subscribe();
   }
 
   openDialog(): void {
     const dialogRef = this.dialog.open(DialogComponent, {
-      width: '250px',
+      width: '450px',
+      data: {
+        elements: this.elements,
+      },
     });
 
-    dialogRef.afterClosed().subscribe((result) => {
-      this.api
-        .getCharacters()
-        .pipe(
-          tap((chars) => {
-            this.chars = chars;
-            this.dataSource.data = this.chars;
-          })
-        )
-        .subscribe();
-    });
+    dialogRef
+      .afterClosed()
+      .pipe(
+        tap(async (_) => {
+          const characters = await firstValueFrom(this.api.getCharacters());
+          this.chars = characters.map((char) => {
+            const element = this.elements.find((el) => char.element === el.id);
+            return {
+              ...char,
+              elementName: element?.name,
+            };
+          });
+          this.dataSource.data = this.chars;
+        })
+      )
+      .subscribe();
   }
 
-  updateCharacter(element: Character) {
+  updateCharacter(character: Character) {
     const dialogRef2 = this.dialog.open(DialogComponent, {
-      width: '250px',
-      data: element,
+      width: '450px',
+      data: {
+        character: character,
+        elements: this.elements,
+      },
     });
-    dialogRef2.afterClosed().subscribe((result) => {
-      this.api
-        .getCharacters()
-        .pipe(
-          tap((chars) => {
-            this.chars = chars;
-            this.dataSource.data = this.chars;
-          })
-        )
-        .subscribe();
-    });
+    dialogRef2
+      .afterClosed()
+      .pipe(
+        tap(async (_) => {
+          const characters = await firstValueFrom(this.api.getCharacters());
+          this.chars = characters.map((char) => {
+            const element = this.elements.find((el) => char.element === el.id);
+            return {
+              ...char,
+              elementName: element?.name,
+            };
+          });
+          this.dataSource.data = this.chars;
+        })
+      )
+      .subscribe();
   }
 
-  deleteCharacter(name: string) {
-    this.api.deleteCharacter(name).subscribe({
-      next: (res) => {
-        this.snackBar.open('Deleted ' + name + ' successfully !!!', '🤑🤑🤑', {
+  deleteCharacter(id: number) {
+    this.api.deleteCharacter(id).subscribe({
+      next: async (res) => {
+        this.snackBar.open('Deleted successfully !!!', '🤑🤑🤑', {
           horizontalPosition: this.horizontalPosition,
           verticalPosition: this.verticalPosition,
         });
 
-        this.api
-          .getCharacters()
-          .pipe(
-            tap((chars) => {
-              this.chars = chars;
-              this.dataSource.data = this.chars;
-            })
-          )
-          .subscribe();
+        const characters = await firstValueFrom(this.api.getCharacters());
+        this.chars = characters.map((char) => {
+          const element = this.elements.find((el) => char.element === el.id);
+          return {
+            ...char,
+            elementName: element?.name,
+          };
+        });
+        this.dataSource.data = this.chars;
       },
       error: () => {
         alert('Failed');

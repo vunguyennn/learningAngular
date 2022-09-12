@@ -1,6 +1,6 @@
 import { Component, OnInit, Inject } from '@angular/core';
 import { FormGroup, FormBuilder, Validator, Validators } from '@angular/forms';
-import { ApiService, Character } from '../services/api.service';
+import { ApiService, Character, Element } from '../services/api.service';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { MatTableDataSource } from '@angular/material/table';
 import {
@@ -9,6 +9,11 @@ import {
   MatSnackBarVerticalPosition,
 } from '@angular/material/snack-bar';
 
+export interface DialogInput {
+  character: Character;
+  elements: Element[];
+}
+
 @Component({
   selector: 'app-dialog',
   templateUrl: './dialog.component.html',
@@ -16,8 +21,8 @@ import {
 })
 export class DialogComponent implements OnInit {
   productForm!: FormGroup;
-  actionBtn = 'Save';
-  dialogTitle = 'Create Character';
+  actionBtn = 'Add';
+  dialogTitle = 'Add Character';
   chars: Character[] = [];
   dataSource = new MatTableDataSource();
   horizontalPosition: MatSnackBarHorizontalPosition = 'start';
@@ -28,9 +33,10 @@ export class DialogComponent implements OnInit {
     private api: ApiService,
     private dialogRef: MatDialogRef<DialogComponent>,
     private snackBar: MatSnackBar,
-    @Inject(MAT_DIALOG_DATA) public updateCharacter: Character
+    @Inject(MAT_DIALOG_DATA) public data: DialogInput
   ) {
     this.productForm = this.formBuilder.group({
+      id: [''],
       name: ['', Validators.required],
       element: ['', Validators.required],
     });
@@ -38,42 +44,29 @@ export class DialogComponent implements OnInit {
 
   ngOnInit(): void {
     const body = {};
-    console.log(this.updateCharacter);
-    if (this.updateCharacter) {
-      this.productForm.controls['name'].disable();
+    console.log('😎 ~ this.updateCharacter', this.data);
+    if (this.data.character) {
+      const { id, name, element } = this.data.character;
+      // Use this to make field read-only
+      // this.productForm.controls['name'].disable();
       this.actionBtn = 'Update';
-      this.dialogTitle = 'Update Character';
-      this.productForm.controls['name'].setValue(this.updateCharacter.name);
-      this.productForm.controls['element'].setValue(
-        this.updateCharacter.element
-      );
+      this.dialogTitle = 'Edit Character';
+
+      // this.productForm.controls['id'].setValue(this.updateCharacter.id);
+      // this.productForm.controls['name'].setValue(this.updateCharacter.name);
+      // this.productForm.controls['element'].setValue(
+      //   this.updateCharacter.element
+      // );
+      this.productForm.patchValue({ id, name, element });
     }
   }
   addCharacter() {
     this.api.postCharacter(this.productForm.getRawValue()).subscribe({
       next: (res) => {
-        // if (this.actionBtn != 'Save') {
-        //   this.snackBar.open('Updated successfully !!!', '🤑🤑🤑', {
-        //     horizontalPosition: this.horizontalPosition,
-        //     verticalPosition: this.verticalPosition,
-        //   });
-        // } else {
-        //   this.snackBar.open('Created successfully !!!', '🤑🤑🤑', {
-        //     horizontalPosition: this.horizontalPosition,
-        //     verticalPosition: this.verticalPosition,
-        //   });
-        // }
-
-        this.snackBar.open(
-          `${
-            this.actionBtn != 'Save' ? 'Updated' : 'Created'
-          } successfully !!!`,
-          '🤑🤑🤑',
-          {
-            horizontalPosition: this.horizontalPosition,
-            verticalPosition: this.verticalPosition,
-          }
-        );
+        this.snackBar.open(`Created successfully !!!`, '🤑🤑🤑', {
+          horizontalPosition: this.horizontalPosition,
+          verticalPosition: this.verticalPosition,
+        });
 
         this.dialogRef.close();
       },
@@ -81,5 +74,28 @@ export class DialogComponent implements OnInit {
         alert('Failed');
       },
     });
+  }
+
+  updateCharacterDialog() {
+    this.api.updateCharacter(this.productForm.getRawValue()).subscribe({
+      next: (res) => {
+        this.snackBar.open(`Updated successfully !!!`, '🤑🤑🤑', {
+          horizontalPosition: this.horizontalPosition,
+          verticalPosition: this.verticalPosition,
+        });
+        this.dialogRef.close();
+      },
+      error: () => {
+        alert('This name is existed, please try another name 😥');
+      },
+    });
+  }
+
+  clickDialog() {
+    if (this.data.character) {
+      this.updateCharacterDialog();
+    } else {
+      this.addCharacter();
+    }
   }
 }
