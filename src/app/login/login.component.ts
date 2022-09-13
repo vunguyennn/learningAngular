@@ -21,6 +21,7 @@ export class LoginComponent implements OnInit {
   hide = true;
   horizontalPosition: MatSnackBarHorizontalPosition = 'start';
   verticalPosition: MatSnackBarVerticalPosition = 'bottom';
+  loading = false;
 
   constructor(
     private router: Router,
@@ -31,6 +32,8 @@ export class LoginComponent implements OnInit {
   ngOnInit(): void {}
 
   async handleLogin() {
+    this.loading = true;
+
     try {
       const loggedIn: boolean =
         await this.hardcodedAuthenticationService.authenticate(
@@ -43,6 +46,8 @@ export class LoginComponent implements OnInit {
         verticalPosition: this.verticalPosition,
       });
 
+      this.loading = false;
+
       if (loggedIn) {
         this.router.navigate(['home']);
         this.invalidLogin = false;
@@ -50,6 +55,7 @@ export class LoginComponent implements OnInit {
         this.invalidLogin = true;
       }
     } catch (e) {
+      this.loading = false;
       this.snackBar.open('Invalid username or password', undefined, {
         horizontalPosition: this.horizontalPosition,
         verticalPosition: this.verticalPosition,

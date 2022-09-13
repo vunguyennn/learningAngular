@@ -11,7 +11,7 @@ import {
 } from '@angular/material/snack-bar';
 import { MatSort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
-import { firstValueFrom, forkJoin, map, tap } from 'rxjs';
+import { finalize, firstValueFrom, forkJoin, map, tap } from 'rxjs';
 import { DialogComponent } from '../dialog/dialog.component';
 import { ApiService, Character, Element } from '../services/api.service';
 
@@ -30,6 +30,7 @@ export class ListTodosComponent implements OnInit {
   result = {};
   horizontalPosition: MatSnackBarHorizontalPosition = 'start';
   verticalPosition: MatSnackBarVerticalPosition = 'bottom';
+  loading = false;
 
   @ViewChild(MatPaginator) paginator!: MatPaginator;
   @ViewChild(MatSort) sort!: MatSort;
@@ -151,26 +152,29 @@ export class ListTodosComponent implements OnInit {
   }
 
   deleteCharacter(id: number) {
-    this.api.deleteCharacter(id).subscribe({
-      next: async (res) => {
-        this.snackBar.open('Deleted successfully !!!', '🤑🤑🤑', {
-          horizontalPosition: this.horizontalPosition,
-          verticalPosition: this.verticalPosition,
-        });
+    this.loading = true;
 
-        const characters = await firstValueFrom(this.api.getCharacters());
-        this.chars = characters.map((char) => {
-          const element = this.elements.find((el) => char.element === el.id);
-          return {
-            ...char,
-            elementName: element?.name,
-          };
-        });
-        this.dataSource.data = this.chars;
-      },
-      error: () => {
-        alert('Failed');
-      },
-    });
+    this.api
+      .deleteCharacter(id)
+      .pipe(
+        finalize(() => (this.loading = false)),
+        tap(async (res) => {
+          this.snackBar.open('Deleted successfully !!!', '🤑🤑🤑', {
+            horizontalPosition: this.horizontalPosition,
+            verticalPosition: this.verticalPosition,
+          });
+
+          const characters = await firstValueFrom(this.api.getCharacters());
+          this.chars = characters.map((char) => {
+            const element = this.elements.find((el) => char.element === el.id);
+            return {
+              ...char,
+              elementName: element?.name,
+            };
+          });
+          this.dataSource.data = this.chars;
+        })
+      )
+      .subscribe();
   }
 }

@@ -35,48 +35,14 @@
     </div>
     <div class="mt-top">
       <button
+        [loading]="loading"
+        [disabled]="loading"
+        [btnContent]="'Login'"
         mat-raised-button
-        color="primary"
         style="float: right"
         (click)="handleLogin()"
-      >
-        Login
-      </button>
+      ></button>
     </div>
   </body>
   <p *ngIf="invalidLogin">{{ errorMessageLogin }}</p>
 </div>
-
-<!-- <div class="text-center">
-  <h4 class="text-center">Login form with Validation using Angular Material</h4>
-  <form novalidate class="d-flex-center">
-    <div class="example-container">
-      <div>
-        <mat-form-field>
-          <input matInput placeholder="Email" formControlName="email" />
-          <mat-error> Please enter a valid email address </mat-error>
-          <mat-error> Email is required </mat-error>
-        </mat-form-field>
-      </div>
-      <div class="mt-top-2">
-        <mat-form-field>
-          <input
-            matInput
-            type="password"
-            placeholder="Password"
-            formControlName="password"
-          />
-          <mat-error>
-            Password length must be greater than or equal to 8 and password must
-            contain one or more uppercase , lowercase , numeric and special
-            characters
-          </mat-error>
-          <mat-error> Password is required </mat-error>
-        </mat-form-field>
-      </div>
-      <div class="mt-top">
-        <button>Sign In</button>
-      </div>
-    </div>
-  </form>
-</div> -->

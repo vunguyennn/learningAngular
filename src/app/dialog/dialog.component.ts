@@ -8,6 +8,8 @@ import {
   MatSnackBarHorizontalPosition,
   MatSnackBarVerticalPosition,
 } from '@angular/material/snack-bar';
+import { catchError, finalize, tap } from 'rxjs/operators';
+import { Observable, of, throwError } from 'rxjs';
 
 export interface DialogInput {
   character: Character;
@@ -27,6 +29,7 @@ export class DialogComponent implements OnInit {
   dataSource = new MatTableDataSource();
   horizontalPosition: MatSnackBarHorizontalPosition = 'start';
   verticalPosition: MatSnackBarVerticalPosition = 'bottom';
+  loading = false;
 
   constructor(
     private formBuilder: FormBuilder,
@@ -60,35 +63,42 @@ export class DialogComponent implements OnInit {
       this.productForm.patchValue({ id, name, element });
     }
   }
-  addCharacter() {
-    this.api.postCharacter(this.productForm.getRawValue()).subscribe({
-      next: (res) => {
-        this.snackBar.open(`Created successfully !!!`, '🤑🤑🤑', {
-          horizontalPosition: this.horizontalPosition,
-          verticalPosition: this.verticalPosition,
-        });
 
-        this.dialogRef.close();
-      },
-      error: () => {
-        alert('Failed');
-      },
-    });
+  addCharacter() {
+    this.loading = true;
+
+    this.api
+      .postCharacter(this.productForm.getRawValue())
+      .pipe(
+        finalize(() => (this.loading = false)),
+        tap((res) => {
+          this.snackBar.open(`Created successfully !!!`, '🤑🤑🤑', {
+            horizontalPosition: this.horizontalPosition,
+            verticalPosition: this.verticalPosition,
+          });
+
+          this.dialogRef.close();
+        })
+      )
+      .subscribe();
   }
 
   updateCharacterDialog() {
-    this.api.updateCharacter(this.productForm.getRawValue()).subscribe({
-      next: (res) => {
-        this.snackBar.open(`Updated successfully !!!`, '🤑🤑🤑', {
-          horizontalPosition: this.horizontalPosition,
-          verticalPosition: this.verticalPosition,
-        });
-        this.dialogRef.close();
-      },
-      error: () => {
-        alert('This name is existed, please try another name 😥');
-      },
-    });
+    this.loading = true;
+
+    this.api
+      .updateCharacter(this.productForm.getRawValue())
+      .pipe(
+        finalize(() => (this.loading = false)),
+        tap((res) => {
+          this.snackBar.open(`Updated successfully !!!`, '🤑🤑🤑', {
+            horizontalPosition: this.horizontalPosition,
+            verticalPosition: this.verticalPosition,
+          });
+          this.dialogRef.close();
+        })
+      )
+      .subscribe();
   }
 
   clickDialog() {
