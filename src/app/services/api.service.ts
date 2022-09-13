@@ -3,8 +3,12 @@ import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 
 export interface Character {
+  id: number;
   name: string;
-  element: string;
+  element: number;
+
+  // Map at UI
+  elementName?: string;
 }
 
 export interface LoginRes {
@@ -14,6 +18,11 @@ export interface LoginRes {
 export interface Account {
   username: string;
   password: string;
+}
+
+export interface Element {
+  id: number;
+  name: string;
 }
 
 @Injectable({
@@ -31,14 +40,19 @@ export class ApiService {
   }
 
   updateCharacter(character: Character) {
-    return this.http.patch<Character[]>('api/char', character);
+    console.log('😎 ~ character', character);
+    return this.http.put<Character[]>(`api/char/${character.id}`, character);
   }
 
-  deleteCharacter(name: string) {
-    return this.http.delete(`api/char/${name}`);
+  deleteCharacter(id: number) {
+    return this.http.delete(`api/char/${id}`);
   }
 
   login(account: Account) {
     return this.http.post<LoginRes>('api/login', account);
+  }
+
+  getElement(): Observable<Element[]> {
+    return this.http.get<Element[]>('api/element');
   }
 }

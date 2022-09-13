@@ -31,6 +31,8 @@ import {
   MatSnackBarModule,
   MAT_SNACK_BAR_DEFAULT_OPTIONS,
 } from '@angular/material/snack-bar';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { ButtonLoadingDirective } from './button-loading.directive';
 @NgModule({
   declarations: [
     AppComponent,
@@ -42,6 +44,7 @@ import {
     FooterComponent,
     LogoutComponent,
     DialogComponent,
+    ButtonLoadingDirective,
   ],
   imports: [
     BrowserModule,
@@ -63,6 +66,7 @@ import {
     HttpClientModule,
     MatPaginatorModule,
     MatSnackBarModule,
+    MatProgressSpinnerModule,
   ],
   providers: [
     { provide: HTTP_INTERCEPTORS, useClass: TokenInterceptor, multi: true },
