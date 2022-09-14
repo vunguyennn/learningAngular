@@ -49,8 +49,15 @@
     <a *ngIf="!(isUserLoggedIn$ | async)" routerLink="/">Login</a>
     <!-- <a *ngIf="!isUserLoggedIn" routerLink="/login">Login</a> -->
   </ul>
-  <ul>
-    <a *ngIf="isUserLoggedIn$ | async" routerLink="/logout">Logout</a>
-    <!-- <a *ngIf="isUserLoggedIn" routerLink="/logout">Logout</a> -->
-  </ul>
+  <button *ngIf="isUserLoggedIn$ | async" mat-button [matMenuTriggerFor]="menu">
+    <img class="login__image" src="/assets/diluc.png" alt="image" />
+  </button>
+  <mat-menu #menu="matMenu">
+    <ul>
+      <button class="button__logout" routerLink="/logout" mat-menu-item>
+        Log out
+      </button>
+      <!-- <a *ngIf="isUserLoggedIn" routerLink="/logout">Logout</a> -->
+    </ul>
+  </mat-menu>
 </mat-toolbar>

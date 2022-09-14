@@ -1,6 +1,12 @@
 import { Component, OnInit, Inject } from '@angular/core';
 import { FormGroup, FormBuilder, Validator, Validators } from '@angular/forms';
-import { ApiService, Character, Element } from '../services/api.service';
+import {
+  ApiService,
+  Character,
+  Element,
+  UploadImageReq,
+  Weapon,
+} from '../services/api.service';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { MatTableDataSource } from '@angular/material/table';
 import {
@@ -8,18 +14,19 @@ import {
   MatSnackBarHorizontalPosition,
   MatSnackBarVerticalPosition,
 } from '@angular/material/snack-bar';
-import { catchError, finalize, tap } from 'rxjs/operators';
-import { Observable, of, throwError } from 'rxjs';
+import { finalize, tap } from 'rxjs/operators';
+import { defer, firstValueFrom } from 'rxjs';
 
 export interface DialogInput {
   character: Character;
   elements: Element[];
+  weapons: Weapon[];
 }
 
 @Component({
   selector: 'app-dialog',
   templateUrl: './dialog.component.html',
-  styleUrls: ['./dialog.component.css'],
+  styleUrls: ['./dialog.component.scss'],
 })
 export class DialogComponent implements OnInit {
   productForm!: FormGroup;
@@ -30,6 +37,9 @@ export class DialogComponent implements OnInit {
   horizontalPosition: MatSnackBarHorizontalPosition = 'start';
   verticalPosition: MatSnackBarVerticalPosition = 'bottom';
   loading = false;
+  event!: { target: { files: any } };
+  uploadImageData: Partial<UploadImageReq> = {};
+  url = './assets/cat.jpg';
 
   constructor(
     private formBuilder: FormBuilder,
@@ -42,14 +52,15 @@ export class DialogComponent implements OnInit {
       id: [''],
       name: ['', Validators.required],
       element: ['', Validators.required],
+      weapon: ['', Validators.required],
+      imgUrl: ['', Validators.required],
     });
   }
 
   ngOnInit(): void {
     const body = {};
-    console.log('😎 ~ this.updateCharacter', this.data);
     if (this.data.character) {
-      const { id, name, element } = this.data.character;
+      const { id, name, element, weapon, imgUrl } = this.data.character;
       // Use this to make field read-only
       // this.productForm.controls['name'].disable();
       this.actionBtn = 'Update';
@@ -60,52 +71,62 @@ export class DialogComponent implements OnInit {
       // this.productForm.controls['element'].setValue(
       //   this.updateCharacter.element
       // );
-      this.productForm.patchValue({ id, name, element });
+      this.productForm.patchValue({ id, name, element, weapon, imgUrl });
     }
   }
 
-  addCharacter() {
+  async save() {
     this.loading = true;
+    const character: Character = this.productForm.getRawValue();
 
-    this.api
-      .postCharacter(this.productForm.getRawValue())
-      .pipe(
-        finalize(() => (this.loading = false)),
-        tap((res) => {
-          this.snackBar.open(`Created successfully !!!`, '🤑🤑🤑', {
-            horizontalPosition: this.horizontalPosition,
-            verticalPosition: this.verticalPosition,
-          });
-
-          this.dialogRef.close();
-        })
-      )
-      .subscribe();
-  }
-
-  updateCharacterDialog() {
-    this.loading = true;
-
-    this.api
-      .updateCharacter(this.productForm.getRawValue())
-      .pipe(
-        finalize(() => (this.loading = false)),
-        tap((res) => {
-          this.snackBar.open(`Updated successfully !!!`, '🤑🤑🤑', {
-            horizontalPosition: this.horizontalPosition,
-            verticalPosition: this.verticalPosition,
-          });
-          this.dialogRef.close();
-        })
-      )
-      .subscribe();
-  }
-
-  clickDialog() {
-    if (this.data.character) {
-      this.updateCharacterDialog();
-    } else {
-      this.addCharacter();
+    if (this.uploadImageData?.blob && this.uploadImageData?.name) {
+      const res: any = await firstValueFrom(
+        this.api.uploadImage(this.uploadImageData)
+      );
+      character.imgUrl = res.imgUrl;
     }
+
+    if (this.uploadImageData.blob)
+      defer(() => {
+        return this.data.character
+          ? this.api.updateCharacter(character)
+          : this.api.postCharacter(character);
+      })
+        .pipe(
+          finalize(() => (this.loading = false)),
+          tap((res) => {
+            console.log('😎 ~ res', res);
+            this.snackBar.open(
+              `${this.data.character ? 'Updated' : 'Created'} successfully !!!`,
+              '🤑🤑🤑',
+              {
+                horizontalPosition: this.horizontalPosition,
+                verticalPosition: this.verticalPosition,
+              }
+            );
+            this.dialogRef.close(res);
+          })
+        )
+        .subscribe();
+  }
+
+  onFileSelected(event: any) {
+    const file: File = event.target.files[0];
+    const reader = new FileReader();
+    const reader2 = new FileReader();
+    reader2.readAsDataURL(event.target.files[0]);
+
+    reader2.onload = (event: any) => {
+      this.url = event.target.result;
+    };
+    reader.onload = () => {
+      const blob = reader.result as string;
+      this.uploadImageData = {
+        blob,
+        name: file.name,
+      };
+    };
+
+    reader.readAsBinaryString(file);
   }
 }

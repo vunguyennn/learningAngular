@@ -8,15 +8,9 @@ table {
 .container {
   max-width: 1200px;
   margin: 0 auto;
+  padding: 16px;
 }
 
-button {
-  margin: 0 auto;
-}
-
-image {
-  margin: 0 auto;
-}
 .mat-form-field {
   font-size: 14px;
   width: 1200px;
@@ -25,4 +19,16 @@ image {
   display: flex;
   align-items: center;
   gap: 16px;
+}
+
+.action__wrapper {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+}
+
+.character__image {
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
 }

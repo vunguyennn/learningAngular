@@ -7,7 +7,7 @@ import { AppComponent } from './app.component';
 import { LoginComponent } from './login/login.component';
 import { WelcomeComponent } from './welcome/welcome.component';
 import { ErrorComponent } from './error/error.component';
-import { ListTodosComponent } from './list-todos/list-todos.component';
+import { HomeComponent } from './home/home.component';
 import { MenuComponent } from './menu/menu.component';
 import { FooterComponent } from './footer/footer.component';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
@@ -33,18 +33,22 @@ import {
 } from '@angular/material/snack-bar';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { ButtonLoadingDirective } from './button-loading.directive';
+import { DeleteConfirmationDialogComponent } from './delete-confirmation-dialog/delete-confirmation-dialog.component';
+import { MatProgressBarModule } from '@angular/material/progress-bar';
+import { MatMenuModule } from '@angular/material/menu';
 @NgModule({
   declarations: [
     AppComponent,
     LoginComponent,
     WelcomeComponent,
     ErrorComponent,
-    ListTodosComponent,
+    HomeComponent,
     MenuComponent,
     FooterComponent,
     LogoutComponent,
     DialogComponent,
     ButtonLoadingDirective,
+    DeleteConfirmationDialogComponent,
   ],
   imports: [
     BrowserModule,
@@ -67,6 +71,8 @@ import { ButtonLoadingDirective } from './button-loading.directive';
     MatPaginatorModule,
     MatSnackBarModule,
     MatProgressSpinnerModule,
+    MatProgressBarModule,
+    MatMenuModule,
   ],
   providers: [
     { provide: HTTP_INTERCEPTORS, useClass: TokenInterceptor, multi: true },
