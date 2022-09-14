@@ -1,4 +1,4 @@
-import { Component, OnInit, Inject } from '@angular/core';
+import { Component, OnInit, Inject, ViewChild } from '@angular/core';
 import { FormGroup, FormBuilder, Validator, Validators } from '@angular/forms';
 import {
   ApiService,
@@ -29,6 +29,8 @@ export interface DialogInput {
   styleUrls: ['./dialog.component.scss'],
 })
 export class DialogComponent implements OnInit {
+  @ViewChild('createImg') createImg!: HTMLImageElement;
+
   productForm!: FormGroup;
   actionBtn = 'Add';
   dialogTitle = 'Add Character';
@@ -39,8 +41,7 @@ export class DialogComponent implements OnInit {
   loading = false;
   event!: { target: { files: any } };
   uploadImageData: Partial<UploadImageReq> = {};
-  url: UploadImageReq[] = [];
-  // url = '/assets/cat.jpg';
+  previewImg: string = '';
 
   constructor(
     private formBuilder: FormBuilder,
@@ -81,48 +82,50 @@ export class DialogComponent implements OnInit {
     this.loading = true;
     const character: Character = this.productForm.getRawValue();
 
-    if (this.uploadImageData?.blob && this.uploadImageData?.name) {
+    // if previewImg is existed => upload new image
+    if (
+      this.previewImg &&
+      this.uploadImageData?.blob &&
+      this.uploadImageData?.name
+    ) {
       const res: any = await firstValueFrom(
         this.api.uploadImage(this.uploadImageData)
       );
       character.imgUrl = res.imgUrl;
     }
 
-    if (this.uploadImageData.blob)
-      defer(() => {
-        return this.data.character
-          ? this.api.updateCharacter(character)
-          : this.api.postCharacter(character);
-      })
-        .pipe(
-          finalize(() => (this.loading = false)),
-          tap((res) => {
-            console.log('😎 ~ res', res);
-            this.snackBar.open(
-              `${this.data.character ? 'Updated' : 'Created'} successfully !!!`,
-              '🤑🤑🤑',
-              {
-                horizontalPosition: this.horizontalPosition,
-                verticalPosition: this.verticalPosition,
-              }
-            );
-            this.dialogRef.close(res);
-          })
-        )
-        .subscribe();
+    // if has character passed from home => edit
+    // defer === if (but more pro :'( )
+    defer(() => {
+      return this.data.character
+        ? this.api.updateCharacter(character)
+        : this.api.postCharacter(character);
+    })
+      .pipe(
+        finalize(() => (this.loading = false)),
+        tap((res) => {
+          console.log('😎 ~ res', res);
+          this.snackBar.open(
+            `${this.data.character ? 'Updated' : 'Created'} successfully !!!`,
+            '🤑🤑🤑',
+            {
+              horizontalPosition: this.horizontalPosition,
+              verticalPosition: this.verticalPosition,
+            }
+          );
+          this.dialogRef.close(res);
+        })
+      )
+      .subscribe();
   }
 
   onFileSelected(event: any) {
     const file: File = event.target.files[0];
     const reader = new FileReader();
-    const reader2 = new FileReader();
-    reader2.readAsDataURL(event.target.files[0]);
-
-    reader2.onload = (event: any) => {
-      this.url = event.target.result;
-    };
-    reader.onload = () => {
-      const blob = reader.result as string;
+    reader.onloadend = (e: any) => {
+      console.log('😎 ~ this.createImg', this.createImg);
+      this.previewImg = URL.createObjectURL(file);
+      const blob = e.target.result;
       this.uploadImageData = {
         blob,
         name: file.name,

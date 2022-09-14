@@ -1,24 +1,30 @@
 <h1 mat-dialog-title>{{ dialogTitle }}</h1>
 <form [formGroup]="productForm" class="dialog">
+  <input
+    #fileInput
+    type="file"
+    (change)="onFileSelected($event)"
+    onchange="event.target.files"
+    class="my_file"
+    id="firstimg"
+    style="visibility: none; display: none"
+  />
   <div class="wrapper">
-    <!-- <img [src]="data.character.imgUrl" -->
-    <img [src]="url" class="dialog_image" />
-  </div>
-  <div>
-    <div class="icon_camera">
-      <label for="firstimg">
-        <mat-icon>camera_alt</mat-icon>
-      </label>
-    </div>
-    <input
-      type="file"
-      (change)="onFileSelected($event)"
-      onchange="event.target.files"
-      class="my_file"
-      id="firstimg"
-      style="visibility: none; display: none"
+    <img
+      [src]="data.character.imgUrl"
+      class="dialog_image"
+      *ngIf="data?.character?.imgUrl && !previewImg"
     />
+    <img
+      [src]="previewImg | sanitizerUrl"
+      class="dialog_image"
+      *ngIf="previewImg"
+    />
+    <div class="icon_camera" matRipple (click)="fileInput.click()">
+      <mat-icon>camera_alt</mat-icon>
+    </div>
   </div>
+
   <div class="example-container">
     <mat-form-field>
       <mat-label>Name</mat-label>

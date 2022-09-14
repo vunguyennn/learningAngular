@@ -129,18 +129,17 @@ export class HomeComponent implements OnInit {
             this.api
               .deleteAllCharacter()
               .pipe(
-                finalize(() => (this.loading = false)),
-                tap((res) => {
+                tap((characters: Character[]) => {
                   this.snackBar.open('Deleted all successfully !!!', '🤑🤑🤑', {
                     horizontalPosition: this.horizontalPosition,
                     verticalPosition: this.verticalPosition,
                   });
+                  this.chars = characters;
+                  this.dataSource.data = this.chars;
                 })
               )
               .subscribe();
           }
-          await new Promise((f) => setTimeout(f, 1000));
-          this.ngOnInit();
         })
       )
       .subscribe();
@@ -168,18 +167,17 @@ export class HomeComponent implements OnInit {
             this.api
               .deleteCharacter(character.id)
               .pipe(
-                finalize(() => (this.loading = false)),
-                tap((res) => {
-                  this.snackBar.open('Deleted successfully !!!', '🤑🤑🤑', {
+                tap((characters: Character[]) => {
+                  this.snackBar.open('Deleted all successfully !!!', '🤑🤑🤑', {
                     horizontalPosition: this.horizontalPosition,
                     verticalPosition: this.verticalPosition,
                   });
+                  this.chars = characters;
+                  this.dataSource.data = this.chars;
                 })
               )
               .subscribe();
           }
-          await new Promise((f) => setTimeout(f, 1000));
-          this.ngOnInit();
         })
       )
       .subscribe();

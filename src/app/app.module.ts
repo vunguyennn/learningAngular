@@ -36,6 +36,9 @@ import { ButtonLoadingDirective } from './button-loading.directive';
 import { DeleteConfirmationDialogComponent } from './delete-confirmation-dialog/delete-confirmation-dialog.component';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { MatMenuModule } from '@angular/material/menu';
+import { MatRippleModule } from '@angular/material/core';
+import { SanitizerUrlPipe } from './sanitizer-url.pipe';
+
 @NgModule({
   declarations: [
     AppComponent,
@@ -49,6 +52,7 @@ import { MatMenuModule } from '@angular/material/menu';
     DialogComponent,
     ButtonLoadingDirective,
     DeleteConfirmationDialogComponent,
+    SanitizerUrlPipe,
   ],
   imports: [
     BrowserModule,
@@ -73,6 +77,7 @@ import { MatMenuModule } from '@angular/material/menu';
     MatProgressSpinnerModule,
     MatProgressBarModule,
     MatMenuModule,
+    MatRippleModule,
   ],
   providers: [
     { provide: HTTP_INTERCEPTORS, useClass: TokenInterceptor, multi: true },

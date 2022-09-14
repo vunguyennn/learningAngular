@@ -53,6 +53,7 @@ export interface File {
 export class ApiService {
   constructor(private http: HttpClient) {}
 
+  // http.get<Character[]> ==> the api returns Character[]
   getCharacters(): Observable<Character[]> {
     return this.http.get<Character[]>('api/char');
   }
@@ -66,7 +67,7 @@ export class ApiService {
   }
 
   deleteCharacter(id: number) {
-    return this.http.delete(`api/char/${id}`);
+    return this.http.delete<Character[]>(`api/char/${id}`);
   }
 
   login(account: Account) {
@@ -86,6 +87,6 @@ export class ApiService {
   }
 
   deleteAllCharacter() {
-    return this.http.delete(`api/char`);
+    return this.http.delete<Character[]>(`api/char`);
   }
 }

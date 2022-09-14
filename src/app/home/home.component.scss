@@ -50,9 +50,6 @@ table {
   text-align: center;
 }
 
-th.mat-header-cell {
-  border-bottom-style: none;
-}
-td.mat-cell {
-  border-bottom-style: none;
+.mat-cell {
+  padding: 10px 5px;
 }
