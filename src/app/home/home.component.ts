@@ -118,11 +118,24 @@ export class HomeComponent implements OnInit {
           elements: this.elements,
         },
       })
-      .afterClosed();
-    this.api
-      .deleteAllCharacter()
+      .afterClosed()
       .pipe(
-        tap(async () => {
+        tap(async (confirm) => {
+          if (confirm) {
+            // Delete here
+            this.api
+              .deleteAllCharacter()
+              .pipe(
+                finalize(() => (this.loading = false)),
+                tap((res) => {
+                  this.snackBar.open('Deleted all successfully !!!', '🤑🤑🤑', {
+                    horizontalPosition: this.horizontalPosition,
+                    verticalPosition: this.verticalPosition,
+                  });
+                })
+              )
+              .subscribe();
+          }
           await new Promise((f) => setTimeout(f, 1000));
           this.ngOnInit();
         })
