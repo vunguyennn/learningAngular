@@ -1,0 +1,55 @@
+.example-spacer {
+  flex: 1 1 auto;
+}
+
+table {
+  width: 100%;
+}
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 16px;
+}
+
+.mat-form-field {
+  font-size: 14px;
+  width: 1200px;
+}
+.search-content {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  justify-content: center;
+  text-align: center;
+}
+
+.action__wrapper {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+}
+
+.character__image {
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+}
+
+.button {
+  justify-content: center;
+  text-align: center;
+  display: flex;
+  align-items: center;
+}
+
+.button_search {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  justify-content: center;
+  text-align: center;
+}
+
+.mat-cell {
+  padding: 10px 5px;
+}

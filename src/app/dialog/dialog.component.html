@@ -1,23 +1,59 @@
 <h1 mat-dialog-title>{{ dialogTitle }}</h1>
 <form [formGroup]="productForm" class="dialog">
+  <input
+    #fileInput
+    type="file"
+    (change)="onFileSelected($event)"
+    onchange="event.target.files"
+    class="my_file"
+    id="firstimg"
+    style="visibility: none; display: none"
+  />
+  <div class="wrapper">
+    <img
+      [src]="data.character.imgUrl"
+      class="dialog_image"
+      *ngIf="data?.character?.imgUrl && !previewImg"
+    />
+    <img
+      [src]="previewImg | sanitizerUrl"
+      class="dialog_image"
+      *ngIf="previewImg"
+    />
+    <div class="icon_camera" matRipple (click)="fileInput.click()">
+      <mat-icon>camera_alt</mat-icon>
+    </div>
+  </div>
+
   <div class="example-container">
-    <mat-form-field appearance="fill">
+    <mat-form-field>
       <mat-label>Name</mat-label>
       <input formControlName="name" matInput #input placeholder="Razor" />
     </mat-form-field>
   </div>
 
-  <mat-form-field appearance="fill">
+  <mat-form-field>
     <mat-label>Element</mat-label>
     <mat-select formControlName="element">
-      <mat-option
-        *ngFor="let el of data.elements"
-        type="number"
-        [value]="el.id"
-        >{{ el.name }}</mat-option
-      >
+      <mat-option *ngFor="let el of data.elements" [value]="el.id">{{
+        el.name
+      }}</mat-option>
     </mat-select>
   </mat-form-field>
+
+  <mat-form-field>
+    <mat-label>Weapon</mat-label>
+    <mat-select formControlName="weapon">
+      <mat-option *ngFor="let el of data.weapons" [value]="el.id">{{
+        el.name
+      }}</mat-option>
+    </mat-select>
+  </mat-form-field>
+
+  <!-- <div class="example-container">
+    <p>Image</p>
+    <input />
+  </div> -->
 
   <div mat-dialog-actions [align]="'end'">
     <button mat-button mat-dialog-close>Cancel</button>
@@ -25,7 +61,7 @@
       mat-raised-button
       [disabled]="loading"
       color="primary"
-      (click)="clickDialog()"
+      (click)="save()"
       [loading]="loading"
       [btnContent]="actionBtn"
     ></button>

@@ -6,9 +6,10 @@ export interface Character {
   id: number;
   name: string;
   element: number;
-
-  // Map at UI
-  elementName?: string;
+  elementName: string;
+  weapon: number;
+  weaponName: string;
+  imgUrl: string;
 }
 
 export interface LoginRes {
@@ -25,12 +26,34 @@ export interface Element {
   name: string;
 }
 
+export interface UploadImageReq {
+  blob: string;
+  name: string;
+}
+
+export interface Weapon {
+  id: number;
+  name: string;
+  iconUrl: string;
+  baseAtk: string;
+  effectName: string;
+  description: string;
+  weaponType: string;
+  rarity: number;
+}
+
+export interface File {
+  blob: string;
+  name: string;
+}
+
 @Injectable({
   providedIn: 'root',
 })
 export class ApiService {
   constructor(private http: HttpClient) {}
 
+  // http.get<Character[]> ==> the api returns Character[]
   getCharacters(): Observable<Character[]> {
     return this.http.get<Character[]>('api/char');
   }
@@ -40,12 +63,11 @@ export class ApiService {
   }
 
   updateCharacter(character: Character) {
-    console.log('😎 ~ character', character);
     return this.http.put<Character[]>(`api/char/${character.id}`, character);
   }
 
   deleteCharacter(id: number) {
-    return this.http.delete(`api/char/${id}`);
+    return this.http.delete<Character[]>(`api/char/${id}`);
   }
 
   login(account: Account) {
@@ -54,5 +76,17 @@ export class ApiService {
 
   getElement(): Observable<Element[]> {
     return this.http.get<Element[]>('api/element');
+  }
+
+  getWeapon() {
+    return this.http.get<Weapon[]>('api/weapon');
+  }
+
+  uploadImage(data: Partial<UploadImageReq>) {
+    return this.http.post('api/char/image', data);
+  }
+
+  deleteAllCharacter() {
+    return this.http.delete<Character[]>(`api/char`);
   }
 }

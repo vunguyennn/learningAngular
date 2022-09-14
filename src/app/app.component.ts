@@ -6,7 +6,7 @@ import { HardcodedAuthenticationService } from './service/hardcoded-authenticati
   selector: 'app-root',
   templateUrl: './app.component.html',
   // template: '<h1>{{name}}</h1>',
-  styleUrls: ['./app.component.css'],
+  styleUrls: ['./app.component.scss'],
 })
 export class AppComponent implements OnInit {
   public title = 'Hello World';
