@@ -5,25 +5,27 @@
       <input matInput (keyup)="applyFilter($event)" placeholder="Name" #input />
     </mat-form-field>
 
-    <button
-      [disabled]="initializing"
-      mat-raised-button
-      color="primary"
-      (click)="storeCharacter()"
-    >
-      Add
-    </button>
+    <div class="button_search">
+      <button
+        [disabled]="initializing"
+        mat-raised-button
+        color="primary"
+        (click)="storeCharacter()"
+      >
+        Add
+      </button>
 
-    <button
-      [disabled]="initializing"
-      mat-raised-button
-      color="warn"
-      (click)="deleteAllCharacter()"
-    >
-      Remove all
-    </button>
+      <button
+        class="button__deleteAll"
+        mat-raised-button
+        [disabled]="initializing"
+        color="warn"
+        (click)="deleteAllCharacter()"
+      >
+        Remove all
+      </button>
+    </div>
   </div>
-
   <mat-progress-bar
     *ngIf="initializing; else mainView"
     mode="indeterminate"

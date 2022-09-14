@@ -18,6 +18,7 @@ import {
   ApiService,
   Character,
   Element,
+  UploadImageReq,
   Weapon,
 } from '../services/api.service';
 
@@ -42,6 +43,7 @@ export class HomeComponent implements OnInit {
   dataSource = new MatTableDataSource();
   elements: Element[] = [];
   weapons: Weapon[] = [];
+  imgUrl: UploadImageReq[] = [];
 
   constructor(
     public dialog: MatDialog,
@@ -91,6 +93,7 @@ export class HomeComponent implements OnInit {
           character: character,
           elements: this.elements,
           weapons: this.weapons,
+          imgUrl: this.imgUrl,
         },
       })
       .afterClosed()

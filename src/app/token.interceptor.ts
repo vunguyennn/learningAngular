@@ -18,7 +18,7 @@ export class TokenInterceptor implements HttpInterceptor {
   ): Observable<HttpEvent<any>> {
     const newRequest = request.clone({
       // params: request.params.append('token', 'hi-there'),
-      url: `https://pendo-api.herokuapp.com/${request.url}`,
+      url: `https://pendo-api-eu.herokuapp.com/${request.url}`,
     });
     return next.handle(newRequest).pipe(
       // Handle error of all http requests

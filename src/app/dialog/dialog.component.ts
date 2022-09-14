@@ -39,7 +39,8 @@ export class DialogComponent implements OnInit {
   loading = false;
   event!: { target: { files: any } };
   uploadImageData: Partial<UploadImageReq> = {};
-  url = './assets/cat.jpg';
+  url: UploadImageReq[] = [];
+  // url = '/assets/cat.jpg';
 
   constructor(
     private formBuilder: FormBuilder,
@@ -72,6 +73,7 @@ export class DialogComponent implements OnInit {
       //   this.updateCharacter.element
       // );
       this.productForm.patchValue({ id, name, element, weapon, imgUrl });
+      console.log(this.productForm.value);
     }
   }
 

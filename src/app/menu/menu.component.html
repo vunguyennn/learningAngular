@@ -53,11 +53,9 @@
     <img class="login__image" src="/assets/diluc.png" alt="image" />
   </button>
   <mat-menu #menu="matMenu">
-    <ul>
-      <button class="button__logout" routerLink="/logout" mat-menu-item>
-        Log out
-      </button>
-      <!-- <a *ngIf="isUserLoggedIn" routerLink="/logout">Logout</a> -->
-    </ul>
+    <button class="button__logout" routerLink="/logout" mat-menu-item>
+      Log out
+    </button>
+    <!-- <a *ngIf="isUserLoggedIn" routerLink="/logout">Logout</a> -->
   </mat-menu>
 </mat-toolbar>

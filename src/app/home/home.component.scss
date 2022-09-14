@@ -19,6 +19,8 @@ table {
   display: flex;
   align-items: center;
   gap: 16px;
+  justify-content: center;
+  text-align: center;
 }
 
 .action__wrapper {
@@ -31,4 +33,26 @@ table {
   width: 60px;
   height: 60px;
   border-radius: 50%;
+}
+
+.button {
+  justify-content: center;
+  text-align: center;
+  display: flex;
+  align-items: center;
+}
+
+.button_search {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  justify-content: center;
+  text-align: center;
+}
+
+th.mat-header-cell {
+  border-bottom-style: none;
+}
+td.mat-cell {
+  border-bottom-style: none;
 }
