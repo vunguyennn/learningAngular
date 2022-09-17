@@ -6,10 +6,9 @@ export interface Character {
   id: number;
   name: string;
   element: number;
-  elementName: string;
   weapon: number;
-  weaponName: string;
   imgUrl: string;
+  // weaponTypes: number;
 }
 
 export interface LoginRes {
@@ -24,6 +23,7 @@ export interface Account {
 export interface Element {
   id: number;
   name: string;
+  iconUrl: string;
 }
 
 export interface UploadImageReq {
@@ -38,8 +38,14 @@ export interface Weapon {
   baseAtk: string;
   effectName: string;
   description: string;
-  weaponType: string;
+  weaponType: number;
   rarity: number;
+}
+
+export interface WeaponType {
+  id: number;
+  name: string;
+  iconUrl: string;
 }
 
 export interface File {
@@ -80,6 +86,10 @@ export class ApiService {
 
   getWeapon() {
     return this.http.get<Weapon[]>('api/weapon');
+  }
+
+  getWeaponType() {
+    return this.http.get<WeaponType[]>('api/weaponType');
   }
 
   uploadImage(data: Partial<UploadImageReq>) {

@@ -43,14 +43,14 @@
       <ng-container matColumnDef="element">
         <th mat-header-cell *matHeaderCellDef>Element</th>
         <td mat-cell *matCellDef="let element">
-          {{ element.elementName }}
+          {{ element.element }}
         </td>
       </ng-container>
 
       <ng-container matColumnDef="weapon">
         <th mat-header-cell *matHeaderCellDef>Weapon</th>
         <td mat-cell *matCellDef="let element">
-          {{ element.weaponName || "No weapon" }}
+          {{ element.weaponName }}
         </td>
       </ng-container>
 

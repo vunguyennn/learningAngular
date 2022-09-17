@@ -11,15 +11,15 @@ import {
 } from '@angular/material/snack-bar';
 import { MatSort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
-import { finalize, firstValueFrom, forkJoin, tap } from 'rxjs';
+import { finalize, firstValueFrom, forkJoin, map, pipe, tap } from 'rxjs';
 import { DeleteConfirmationDialogComponent } from '../delete-confirmation-dialog/delete-confirmation-dialog.component';
-import { DialogComponent } from '../dialog/dialog.component';
+import { DialogComponent, DialogInput } from '../dialog/dialog.component';
 import {
   ApiService,
   Character,
   Element,
   UploadImageReq,
-  Weapon,
+  WeaponType,
 } from '../services/api.service';
 
 @Component({
@@ -42,8 +42,8 @@ export class HomeComponent implements OnInit {
   chars: Character[] = [];
   dataSource = new MatTableDataSource();
   elements: Element[] = [];
-  weapons: Weapon[] = [];
   imgUrl: UploadImageReq[] = [];
+  weaponType: WeaponType[] = [];
 
   constructor(
     public dialog: MatDialog,
@@ -63,15 +63,28 @@ export class HomeComponent implements OnInit {
     forkJoin([
       this.api.getCharacters(),
       this.api.getElement(),
-      this.api.getWeapon(),
+      this.api.getWeaponType(),
     ])
       .pipe(
-        tap(([characters, elements, weapons]) => {
-          this.chars = characters;
-          this.dataSource.data = this.chars;
+        map(([characters, elements, weaponType]) => {
+          this.weaponType = weaponType;
           this.elements = elements;
-          this.weapons = weapons;
+
+          return characters.map((char) => {
+            const weapon = weaponType.find((el) => char.weapon === el.id);
+            const element = elements.find((el) => char.element === el.id);
+            return {
+              ...char,
+              weaponName: weapon?.name,
+              element: element?.name,
+            };
+          });
         }),
+
+        tap((characters) => {
+          this.dataSource.data = characters;
+        }),
+
         finalize(() => (this.initializing = false))
       )
       .subscribe();
@@ -80,7 +93,30 @@ export class HomeComponent implements OnInit {
   applyFilter(event: Event) {
     const filterValue = (event.target as HTMLInputElement).value;
     this.dataSource.filter = filterValue.trim().toLowerCase();
+
+    //! filter at UI => use client's variables instead of fetch API
+    // forkJoin([this.api.getCharacters(), this.api.getWeaponType()])
+    //   .pipe(
+    //     map(([characters, weaponType]) => {
+    //       this.weaponType = weaponType;
+
+    //       return characters.map((char) => {
+    //         const weapon = weaponType.find((el) => char.weaponTypes === el.id);
+    //         return {
+    //           ...char,
+    //           weaponName: weapon?.name,
+    //         };
+    //       });
+    //     }),
+    //     tap((characters) => {
+    //       this.chars = characters;
+    //       this.dataSource.data = this.chars;
+    //     })
+    //   )
+    //   .subscribe();
   }
+
+  // forkJoin([this.api.getCharacters()])
 
   // character can be passed or not (if not -> null)
   // edit & create
@@ -89,12 +125,13 @@ export class HomeComponent implements OnInit {
       .open(DialogComponent, {
         width: '450px',
         autoFocus: false,
+        //! Add type for warning if pass wrong fields
         data: {
           character: character,
           elements: this.elements,
-          weapons: this.weapons,
-          imgUrl: this.imgUrl,
-        },
+          weaponTypes: this.weaponType,
+        } as DialogInput,
+        disableClose: true,
       })
       .afterClosed()
       .pipe(
@@ -110,7 +147,7 @@ export class HomeComponent implements OnInit {
       .subscribe();
   }
 
-  deleteAllCharacter() {
+  async deleteAllCharacter() {
     const message = `Are u sure deleting all items?`;
 
     this.dialog
@@ -120,6 +157,7 @@ export class HomeComponent implements OnInit {
           message,
           elements: this.elements,
         },
+        disableClose: true,
       })
       .afterClosed()
       .pipe(
@@ -143,9 +181,11 @@ export class HomeComponent implements OnInit {
         })
       )
       .subscribe();
+    await new Promise((f) => setTimeout(f, 2000));
+    this.ngOnInit();
   }
 
-  openDialogDelete(character: Character) {
+  async openDialogDelete(character: Character) {
     const message = `Are u sure deleting ${character.name}?`;
 
     // Not delete in confirm delete dialog
@@ -157,6 +197,7 @@ export class HomeComponent implements OnInit {
           message,
           elements: this.elements,
         },
+        disableClose: true,
       })
       .afterClosed()
       .pipe(
@@ -181,6 +222,8 @@ export class HomeComponent implements OnInit {
         })
       )
       .subscribe();
+    await new Promise((f) => setTimeout(f, 2000));
+    this.ngOnInit();
   }
 
   // deleteCharacter(id: number) {

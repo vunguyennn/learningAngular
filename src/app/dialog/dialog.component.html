@@ -43,8 +43,8 @@
 
   <mat-form-field>
     <mat-label>Weapon</mat-label>
-    <mat-select formControlName="weapon">
-      <mat-option *ngFor="let el of data.weapons" [value]="el.id">{{
+    <mat-select formControlName="weaponType">
+      <mat-option *ngFor="let el of data.weaponTypes" [value]="el.id">{{
         el.name
       }}</mat-option>
     </mat-select>

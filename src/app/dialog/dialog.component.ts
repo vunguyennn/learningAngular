@@ -5,7 +5,7 @@ import {
   Character,
   Element,
   UploadImageReq,
-  Weapon,
+  WeaponType,
 } from '../services/api.service';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { MatTableDataSource } from '@angular/material/table';
@@ -14,13 +14,15 @@ import {
   MatSnackBarHorizontalPosition,
   MatSnackBarVerticalPosition,
 } from '@angular/material/snack-bar';
-import { finalize, tap } from 'rxjs/operators';
+import { delay, finalize, tap } from 'rxjs/operators';
 import { defer, firstValueFrom } from 'rxjs';
+import { HomeComponent } from '../home/home.component';
+import { ThisReceiver } from '@angular/compiler';
 
 export interface DialogInput {
   character: Character;
   elements: Element[];
-  weapons: Weapon[];
+  weaponTypes: WeaponType[];
 }
 
 @Component({
@@ -54,7 +56,7 @@ export class DialogComponent implements OnInit {
       id: [''],
       name: ['', Validators.required],
       element: ['', Validators.required],
-      weapon: ['', Validators.required],
+      weaponType: ['', Validators.required],
       imgUrl: ['', Validators.required],
     });
   }
@@ -73,14 +75,49 @@ export class DialogComponent implements OnInit {
       // this.productForm.controls['element'].setValue(
       //   this.updateCharacter.element
       // );
-      this.productForm.patchValue({ id, name, element, weapon, imgUrl });
+      this.productForm.patchValue({
+        // id: id
+        id,
+        name,
+        element: element,
+        weaponType: weapon,
+        imgUrl,
+      });
       console.log(this.productForm.value);
     }
   }
 
   async save() {
     this.loading = true;
-    const character: Character = this.productForm.getRawValue();
+    // const formValue = this.productForm.getRawValue();
+    // has to call formValue.id, formValue.name, ...
+    //* -> use destructuring:
+    const { id, name, element, weaponType, imgUrl } =
+      this.productForm.getRawValue();
+
+    //! this.productForm.getRawValue():
+    //! id
+    //! name
+    //! element
+    //! weaponType -> interface's field is weapon -> has to map name
+    //! imgUrl
+    //* Character:
+    //* id
+    //* name
+    //* element
+    //* weapon
+    //* imgUrl
+    //! Solution 1: rename form control from weaponType -> weapon
+    //! Solution 2: create new character data in this function (recommend)
+    const character: Character = {
+      // if key === value
+      // id: id => id
+      id: id,
+      name, // name: name,
+      element: element,
+      weapon: weaponType,
+      imgUrl: imgUrl,
+    };
 
     // if previewImg is existed => upload new image
     if (
@@ -98,7 +135,9 @@ export class DialogComponent implements OnInit {
     // defer === if (but more pro :'( )
     defer(() => {
       return this.data.character
-        ? this.api.updateCharacter(character)
+        ? // if (this.data.character) => this.api.updateCharacter(character)
+          // else{ this.api.postCharacter(character);}
+          this.api.updateCharacter(character)
         : this.api.postCharacter(character);
     })
       .pipe(
@@ -116,22 +155,25 @@ export class DialogComponent implements OnInit {
           this.dialogRef.close(res);
         })
       )
+
       .subscribe();
   }
 
   onFileSelected(event: any) {
+    // event.target.files = read file
     const file: File = event.target.files[0];
     const reader = new FileReader();
+    // https://developer.mozilla.org/en-US/docs/Web/API/XMLHttpRequest/loadend_event
     reader.onloadend = (e: any) => {
-      console.log('😎 ~ this.createImg', this.createImg);
       this.previewImg = URL.createObjectURL(file);
+
       const blob = e.target.result;
       this.uploadImageData = {
         blob,
         name: file.name,
       };
     };
-
+    // https://developer.mozilla.org/en-US/docs/Web/API/FileReader/readAsBinaryString
     reader.readAsBinaryString(file);
   }
 }
