@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
-import { LoginComponent } from './login/login.component';
-import { HardcodedAuthenticationService } from './service/hardcoded-authentication.service';
+// This import path is too long => use short import
+// import { HardcodedAuthenticationService } from '../services/hardcoded-authentication.service';
+import { HardcodedAuthenticationService } from '@pendo/services';
 
 @Component({
   selector: 'app-root',

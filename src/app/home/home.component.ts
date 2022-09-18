@@ -1,5 +1,4 @@
-import { HttpClient } from '@angular/common/http';
-import { Component, OnInit, ViewChild } from '@angular/core';
+import { Component, Input, OnInit, ViewChild } from '@angular/core';
 
 import { FormGroup } from '@angular/forms';
 import { MatDialog } from '@angular/material/dialog';
@@ -11,16 +10,18 @@ import {
 } from '@angular/material/snack-bar';
 import { MatSort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
-import { finalize, firstValueFrom, forkJoin, map, pipe, tap } from 'rxjs';
-import { DeleteConfirmationDialogComponent } from '../delete-confirmation-dialog/delete-confirmation-dialog.component';
-import { DialogComponent, DialogInput } from '../dialog/dialog.component';
 import {
-  ApiService,
   Character,
+  CharacterService,
   Element,
+  ElementService,
   UploadImageReq,
   WeaponType,
-} from '../services/api.service';
+  WeaponTypeService,
+} from '@pendo/services';
+import { finalize, firstValueFrom, forkJoin, map, tap } from 'rxjs';
+import { DeleteConfirmationDialogComponent } from '../delete-confirmation-dialog/delete-confirmation-dialog.component';
+import { DialogComponent } from '../dialog/dialog.component';
 
 @Component({
   selector: 'home',
@@ -32,7 +33,6 @@ export class HomeComponent implements OnInit {
   @ViewChild(MatSort) sort!: MatSort;
 
   title = 'token-interceptor';
-  result = {};
   horizontalPosition: MatSnackBarHorizontalPosition = 'start';
   verticalPosition: MatSnackBarVerticalPosition = 'bottom';
   loading = false;
@@ -43,17 +43,15 @@ export class HomeComponent implements OnInit {
   dataSource = new MatTableDataSource();
   elements: Element[] = [];
   imgUrl: UploadImageReq[] = [];
-  weaponType: WeaponType[] = [];
+  weaponTypes: WeaponType[] = [];
 
   constructor(
     public dialog: MatDialog,
-    private api: ApiService,
-    http: HttpClient,
-    private snackBar: MatSnackBar
-  ) {
-    const path = 'https://pendo-api.herokuapp.com/api/char';
-    this.result = http.get(path);
-  }
+    private snackBar: MatSnackBar,
+    private characterService: CharacterService,
+    private elementService: ElementService,
+    private weaponTypeService: WeaponTypeService
+  ) {}
 
   ngAfterViewInit() {
     this.dataSource.paginator = this.paginator;
@@ -61,24 +59,26 @@ export class HomeComponent implements OnInit {
 
   async ngOnInit(): Promise<void> {
     forkJoin([
-      this.api.getCharacters(),
-      this.api.getElement(),
-      this.api.getWeaponType(),
+      this.characterService.getCharacters(),
+      this.elementService.getElements(),
+      this.weaponTypeService.getWeaponType(),
     ])
       .pipe(
-        map(([characters, elements, weaponType]) => {
-          this.weaponType = weaponType;
+        map(([characters, elements, weaponTypes]) => {
+          this.weaponTypes = weaponTypes;
           this.elements = elements;
 
+          // Add interface for strict map value
           return characters.map((char) => {
-            const weapon = weaponType.find((el) => char.weapon === el.id);
+            const weapon = weaponTypes.find((el) => char.weapon === el.id);
             const element = elements.find((el) => char.element === el.id);
             return {
               ...char,
-              weaponName: weapon?.name,
-              element: element?.name,
+              weaponName: weapon.name,
+              // element: element?.name, // No element field
+              elementName: element.name,
             };
-          });
+          }) as Character[];
         }),
 
         tap((characters) => {
@@ -121,26 +121,34 @@ export class HomeComponent implements OnInit {
   // character can be passed or not (if not -> null)
   // edit & create
   storeCharacter(character?: Character) {
+    //* If character !== null => set active for it
+    if (character) {
+      this.characterService.setActiveCharacter(character.id);
+    }
+
     this.dialog
       .open(DialogComponent, {
         width: '450px',
         autoFocus: false,
         //! Add type for warning if pass wrong fields
-        data: {
-          character: character,
-          elements: this.elements,
-          weaponTypes: this.weaponType,
-        } as DialogInput,
+        // data: {
+        //   character: character,
+        //   // Get value from store => don't need parent to pass elements in
+        //   // elements: this.elements,
+        //   // weaponTypes: this.weaponTypes,
+        // } as DialogInput,
         disableClose: true,
       })
       .afterClosed()
       .pipe(
-        tap((characters: Character[]) => {
-          if (characters?.length) {
+        tap(async (isSuccess) => {
+          if (isSuccess) {
             // API return new character list, dont need to fetch GET
+            const characters = await firstValueFrom(
+              this.characterService.getCharacters()
+            );
+            this.dataSource.data = this.getMappedCharacters(characters);
             console.log('😎 ~ characters', characters);
-            this.chars = characters;
-            this.dataSource.data = this.chars;
           }
         })
       )
@@ -164,16 +172,15 @@ export class HomeComponent implements OnInit {
         tap(async (confirm) => {
           if (confirm) {
             // Delete here
-            this.api
-              .deleteAllCharacter()
+            this.characterService
+              .deleteAllCharacters()
               .pipe(
-                tap((characters: Character[]) => {
-                  this.snackBar.open('Deleted all successfully !!!', '🤑🤑🤑', {
-                    horizontalPosition: this.horizontalPosition,
-                    verticalPosition: this.verticalPosition,
-                  });
-                  this.chars = characters;
-                  this.dataSource.data = this.chars;
+                tap(async (_) => {
+                  const characters = await firstValueFrom(
+                    this.characterService.getCharacters()
+                  );
+                  this.dataSource.data = this.getMappedCharacters(characters);
+                  console.log('😎 ~ characters', characters);
                 })
               )
               .subscribe();
@@ -181,8 +188,6 @@ export class HomeComponent implements OnInit {
         })
       )
       .subscribe();
-    await new Promise((f) => setTimeout(f, 2000));
-    this.ngOnInit();
   }
 
   async openDialogDelete(character: Character) {
@@ -205,16 +210,15 @@ export class HomeComponent implements OnInit {
           console.log('😎 ~ confirm', confirm);
           if (confirm) {
             // Delete here
-            this.api
+            this.characterService
               .deleteCharacter(character.id)
               .pipe(
-                tap((characters: Character[]) => {
-                  this.snackBar.open('Deleted all successfully !!!', '🤑🤑🤑', {
-                    horizontalPosition: this.horizontalPosition,
-                    verticalPosition: this.verticalPosition,
-                  });
-                  this.chars = characters;
-                  this.dataSource.data = this.chars;
+                tap(async (_) => {
+                  const characters = await firstValueFrom(
+                    this.characterService.getCharacters()
+                  );
+                  this.dataSource.data = this.getMappedCharacters(characters);
+                  console.log('😎 ~ characters', characters);
                 })
               )
               .subscribe();
@@ -222,8 +226,6 @@ export class HomeComponent implements OnInit {
         })
       )
       .subscribe();
-    await new Promise((f) => setTimeout(f, 2000));
-    this.ngOnInit();
   }
 
   // deleteCharacter(id: number) {
@@ -242,4 +244,16 @@ export class HomeComponent implements OnInit {
   //     )
   //     .subscribe();
   // }
+
+  getMappedCharacters(characters: Character[]) {
+    return characters.map((char) => {
+      const weapon = this.weaponTypes.find((el) => char.weapon === el.id);
+      const element = this.elements.find((el) => char.element === el.id);
+      return {
+        ...char,
+        weaponName: weapon.name,
+        elementName: element.name,
+      };
+    }) as Character[];
+  }
 }
