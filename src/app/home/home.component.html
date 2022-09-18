@@ -36,21 +36,23 @@
       <!-- Name Column -->
       <ng-container matColumnDef="name">
         <th mat-header-cell *matHeaderCellDef>Name</th>
-        <td mat-cell *matCellDef="let element">{{ element.name }}</td>
+        <td mat-cell *matCellDef="let element">
+          {{ element.name | capitalizeCase }}
+        </td>
       </ng-container>
 
       <!-- Element Column -->
       <ng-container matColumnDef="element">
-        <th mat-header-cell *matHeaderCellDef>Element</th>
+        <th mat-header-cell *matHeaderCellDef>Vision</th>
         <td mat-cell *matCellDef="let element">
-          {{ element.elementName }}
+          {{ element.elementName | capitalizeCase }}
         </td>
       </ng-container>
 
       <ng-container matColumnDef="weapon">
         <th mat-header-cell *matHeaderCellDef>Weapon</th>
         <td mat-cell *matCellDef="let element">
-          {{ element.weaponName || "No weapon" }}
+          {{ element.weaponName | capitalizeCase }}
         </td>
       </ng-container>
 

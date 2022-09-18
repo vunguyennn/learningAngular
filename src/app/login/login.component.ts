@@ -5,8 +5,7 @@ import {
   MatSnackBarVerticalPosition,
 } from '@angular/material/snack-bar';
 import { Router } from '@angular/router';
-import { firstValueFrom } from 'rxjs';
-import { HardcodedAuthenticationService } from '../service/hardcoded-authentication.service';
+import { HardcodedAuthenticationService } from '@pendo/services';
 
 @Component({
   selector: 'app-login',

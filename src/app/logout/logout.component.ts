@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { HardcodedAuthenticationService } from '../service/hardcoded-authentication.service';
+import { HardcodedAuthenticationService } from '@pendo/services';
 
 @Component({
   selector: 'app-logout',
@@ -8,10 +8,10 @@ import { HardcodedAuthenticationService } from '../service/hardcoded-authenticat
 })
 export class LogoutComponent implements OnInit {
   constructor(
-    public HardcodedAuthenticationService: HardcodedAuthenticationService
+    public hardcodedAuthenticationService: HardcodedAuthenticationService
   ) {}
 
   ngOnInit(): void {
-    this.HardcodedAuthenticationService.logout();
+    this.hardcodedAuthenticationService.logout();
   }
 }

@@ -1,7 +1,7 @@
 import { DialogRef } from '@angular/cdk/dialog';
 import { Component, Inject, OnInit } from '@angular/core';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
-import { Character } from '../services/api.service';
+import { Character } from '@pendo/services';
 
 export interface DialogInput {
   character: Character;

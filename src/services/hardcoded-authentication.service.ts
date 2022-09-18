@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
-import { BehaviorSubject, firstValueFrom, Observable, Subject } from 'rxjs';
-import { ApiService, LoginRes } from '../services/api.service';
 import { Router } from '@angular/router';
+import { BehaviorSubject, firstValueFrom } from 'rxjs';
+import { AccountService } from './account/account.service';
 
 @Injectable({
   providedIn: 'root',
@@ -9,11 +9,11 @@ import { Router } from '@angular/router';
 export class HardcodedAuthenticationService {
   loggedIn$ = new BehaviorSubject<boolean>(false);
 
-  constructor(private api: ApiService, private router: Router) {}
+  constructor(private accountService: AccountService, private router: Router) {}
 
   async authenticate(username: string, password: string) {
     const loginRes = await firstValueFrom(
-      this.api.login({ username, password })
+      this.accountService.login({ username, password })
     );
 
     if (loginRes.valid) {

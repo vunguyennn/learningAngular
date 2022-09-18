@@ -1,5 +1,4 @@
-import { HttpClient } from '@angular/common/http';
-import { Component, OnInit, ViewChild } from '@angular/core';
+import { Component, Input, OnInit, ViewChild } from '@angular/core';
 
 import { FormGroup } from '@angular/forms';
 import { MatDialog } from '@angular/material/dialog';
@@ -11,16 +10,18 @@ import {
 } from '@angular/material/snack-bar';
 import { MatSort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
-import { finalize, firstValueFrom, forkJoin, tap } from 'rxjs';
+import {
+  Character,
+  CharacterService,
+  Element,
+  ElementService,
+  UploadImageReq,
+  WeaponType,
+  WeaponTypeService,
+} from '@pendo/services';
+import { finalize, firstValueFrom, forkJoin, map, tap } from 'rxjs';
 import { DeleteConfirmationDialogComponent } from '../delete-confirmation-dialog/delete-confirmation-dialog.component';
 import { DialogComponent } from '../dialog/dialog.component';
-import {
-  ApiService,
-  Character,
-  Element,
-  UploadImageReq,
-  Weapon,
-} from '../services/api.service';
 
 @Component({
   selector: 'home',
@@ -32,7 +33,6 @@ export class HomeComponent implements OnInit {
   @ViewChild(MatSort) sort!: MatSort;
 
   title = 'token-interceptor';
-  result = {};
   horizontalPosition: MatSnackBarHorizontalPosition = 'start';
   verticalPosition: MatSnackBarVerticalPosition = 'bottom';
   loading = false;
@@ -42,18 +42,16 @@ export class HomeComponent implements OnInit {
   chars: Character[] = [];
   dataSource = new MatTableDataSource();
   elements: Element[] = [];
-  weapons: Weapon[] = [];
   imgUrl: UploadImageReq[] = [];
+  weaponTypes: WeaponType[] = [];
 
   constructor(
     public dialog: MatDialog,
-    private api: ApiService,
-    http: HttpClient,
-    private snackBar: MatSnackBar
-  ) {
-    const path = 'https://pendo-api.herokuapp.com/api/char';
-    this.result = http.get(path);
-  }
+    private snackBar: MatSnackBar,
+    private characterService: CharacterService,
+    private elementService: ElementService,
+    private weaponTypeService: WeaponTypeService
+  ) {}
 
   ngAfterViewInit() {
     this.dataSource.paginator = this.paginator;
@@ -61,17 +59,32 @@ export class HomeComponent implements OnInit {
 
   async ngOnInit(): Promise<void> {
     forkJoin([
-      this.api.getCharacters(),
-      this.api.getElement(),
-      this.api.getWeapon(),
+      this.characterService.getCharacters(),
+      this.elementService.getElements(),
+      this.weaponTypeService.getWeaponType(),
     ])
       .pipe(
-        tap(([characters, elements, weapons]) => {
-          this.chars = characters;
-          this.dataSource.data = this.chars;
+        map(([characters, elements, weaponTypes]) => {
+          this.weaponTypes = weaponTypes;
           this.elements = elements;
-          this.weapons = weapons;
+
+          // Add interface for strict map value
+          return characters.map((char) => {
+            const weapon = weaponTypes.find((el) => char.weapon === el.id);
+            const element = elements.find((el) => char.element === el.id);
+            return {
+              ...char,
+              weaponName: weapon.name,
+              // element: element?.name, // No element field
+              elementName: element.name,
+            };
+          }) as Character[];
         }),
+
+        tap((characters) => {
+          this.dataSource.data = characters;
+        }),
+
         finalize(() => (this.initializing = false))
       )
       .subscribe();
@@ -80,37 +93,69 @@ export class HomeComponent implements OnInit {
   applyFilter(event: Event) {
     const filterValue = (event.target as HTMLInputElement).value;
     this.dataSource.filter = filterValue.trim().toLowerCase();
+
+    //! filter at UI => use client's variables instead of fetch API
+    // forkJoin([this.api.getCharacters(), this.api.getWeaponType()])
+    //   .pipe(
+    //     map(([characters, weaponType]) => {
+    //       this.weaponType = weaponType;
+
+    //       return characters.map((char) => {
+    //         const weapon = weaponType.find((el) => char.weaponTypes === el.id);
+    //         return {
+    //           ...char,
+    //           weaponName: weapon?.name,
+    //         };
+    //       });
+    //     }),
+    //     tap((characters) => {
+    //       this.chars = characters;
+    //       this.dataSource.data = this.chars;
+    //     })
+    //   )
+    //   .subscribe();
   }
+
+  // forkJoin([this.api.getCharacters()])
 
   // character can be passed or not (if not -> null)
   // edit & create
   storeCharacter(character?: Character) {
+    //* If character !== null => set active for it
+    if (character) {
+      this.characterService.setActiveCharacter(character.id);
+    }
+
     this.dialog
       .open(DialogComponent, {
         width: '450px',
         autoFocus: false,
-        data: {
-          character: character,
-          elements: this.elements,
-          weapons: this.weapons,
-          imgUrl: this.imgUrl,
-        },
+        //! Add type for warning if pass wrong fields
+        // data: {
+        //   character: character,
+        //   // Get value from store => don't need parent to pass elements in
+        //   // elements: this.elements,
+        //   // weaponTypes: this.weaponTypes,
+        // } as DialogInput,
+        disableClose: true,
       })
       .afterClosed()
       .pipe(
-        tap((characters: Character[]) => {
-          if (characters?.length) {
+        tap(async (isSuccess) => {
+          if (isSuccess) {
             // API return new character list, dont need to fetch GET
+            const characters = await firstValueFrom(
+              this.characterService.getCharacters()
+            );
+            this.dataSource.data = this.getMappedCharacters(characters);
             console.log('😎 ~ characters', characters);
-            this.chars = characters;
-            this.dataSource.data = this.chars;
           }
         })
       )
       .subscribe();
   }
 
-  deleteAllCharacter() {
+  async deleteAllCharacter() {
     const message = `Are u sure deleting all items?`;
 
     this.dialog
@@ -120,22 +165,22 @@ export class HomeComponent implements OnInit {
           message,
           elements: this.elements,
         },
+        disableClose: true,
       })
       .afterClosed()
       .pipe(
         tap(async (confirm) => {
           if (confirm) {
             // Delete here
-            this.api
-              .deleteAllCharacter()
+            this.characterService
+              .deleteAllCharacters()
               .pipe(
-                tap((characters: Character[]) => {
-                  this.snackBar.open('Deleted all successfully !!!', '🤑🤑🤑', {
-                    horizontalPosition: this.horizontalPosition,
-                    verticalPosition: this.verticalPosition,
-                  });
-                  this.chars = characters;
-                  this.dataSource.data = this.chars;
+                tap(async (_) => {
+                  const characters = await firstValueFrom(
+                    this.characterService.getCharacters()
+                  );
+                  this.dataSource.data = this.getMappedCharacters(characters);
+                  console.log('😎 ~ characters', characters);
                 })
               )
               .subscribe();
@@ -145,7 +190,7 @@ export class HomeComponent implements OnInit {
       .subscribe();
   }
 
-  openDialogDelete(character: Character) {
+  async openDialogDelete(character: Character) {
     const message = `Are u sure deleting ${character.name}?`;
 
     // Not delete in confirm delete dialog
@@ -157,6 +202,7 @@ export class HomeComponent implements OnInit {
           message,
           elements: this.elements,
         },
+        disableClose: true,
       })
       .afterClosed()
       .pipe(
@@ -164,16 +210,15 @@ export class HomeComponent implements OnInit {
           console.log('😎 ~ confirm', confirm);
           if (confirm) {
             // Delete here
-            this.api
+            this.characterService
               .deleteCharacter(character.id)
               .pipe(
-                tap((characters: Character[]) => {
-                  this.snackBar.open('Deleted all successfully !!!', '🤑🤑🤑', {
-                    horizontalPosition: this.horizontalPosition,
-                    verticalPosition: this.verticalPosition,
-                  });
-                  this.chars = characters;
-                  this.dataSource.data = this.chars;
+                tap(async (_) => {
+                  const characters = await firstValueFrom(
+                    this.characterService.getCharacters()
+                  );
+                  this.dataSource.data = this.getMappedCharacters(characters);
+                  console.log('😎 ~ characters', characters);
                 })
               )
               .subscribe();
@@ -199,4 +244,16 @@ export class HomeComponent implements OnInit {
   //     )
   //     .subscribe();
   // }
+
+  getMappedCharacters(characters: Character[]) {
+    return characters.map((char) => {
+      const weapon = this.weaponTypes.find((el) => char.weapon === el.id);
+      const element = this.elements.find((el) => char.element === el.id);
+      return {
+        ...char,
+        weaponName: weapon.name,
+        elementName: element.name,
+      };
+    }) as Character[];
+  }
 }
