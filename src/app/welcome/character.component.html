@@ -1,0 +1,24 @@
+<div
+  *ngFor="let key of KEYS(charsByElement)"
+  class="content__wrapper"
+  style="border: solid rgb(0, 0, 0)"
+>
+  <ng-container *ngIf="charsByElement[key].element; let element">
+    <div class="title__wrapper">
+      <img [src]="element.iconUrl" width="40px" height="40px" />
+      <h2>{{ element.name | capitalizeCase }}</h2>
+    </div>
+    <div class="characters__wrapper">
+      <div
+        class="character"
+        *ngFor="let char of charsByElement[key].characters"
+      >
+        <div class="character__image">
+          <img [src]="char.imgUrl" class="character" />
+          <img [src]="element.iconUrl" class="element" />
+        </div>
+        <p class="text__wrapper">{{ char.name | capitalizeCase }}</p>
+      </div>
+    </div>
+  </ng-container>
+</div>

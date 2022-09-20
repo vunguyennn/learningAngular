@@ -29,12 +29,6 @@ table {
   align-items: center;
 }
 
-.character__image {
-  width: 60px;
-  height: 60px;
-  border-radius: 50%;
-}
-
 .button {
   justify-content: center;
   text-align: center;
@@ -52,4 +46,10 @@ table {
 
 .mat-cell {
   padding: 10px 5px;
+}
+
+.character__image {
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
 }

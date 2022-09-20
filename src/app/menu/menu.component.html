@@ -1,47 +1,23 @@
-<!-- <header>
-  <nav class="navbar navbar-expand-md navbar dark bg-dark">
-    <div><a href="google.com" class="navbar-brand">Genshin</a></div>
-
-    <ul class="navbar-nav">
-      <li><a href="/welcome/vunguyen" class="nav-link">Home</a></li>
-      <li><a href="/todos" class="nav-link">Todos</a></li>
-    </ul>
-    <ul class="navbar-nav navbar-collapse justify-content-end">
-      <li><a href="/login" class="nav-link">Login</a></li>
-      <li><a href="/logout" class="nav-link">Logout</a></li>
-    </ul>
-  </nav>
-</header> -->
-
-<!-- 
-<mat-toolbar color="primary">
-  <div fxHide.gt-xs>
-    <button mat-icon-button (click)="onToggleSidenav()">
-      <mat-icon>menu</mat-icon>
-    </button>
-  </div>
-  <div>
-    <a routerLink="/home">Home</a>
-  </div>
-  <div fxFlex fxLayout fxLayoutAlign="end" fxHide.xs>
-    <ul fxLayout fxLayoutGap="15px" class="navigation-items">
-      <li>
-        <a routerLink="/login">Login</a>
-      </li>
-      <li>
-        <a routerLink="/logout">Logout</a>
-      </li>
-    </ul>
-  </div>
-</mat-toolbar> -->
-
 <mat-toolbar>
   <button
+    *ngIf="isUserLoggedIn$ | async"
+    mat-button
+    [matMenuTriggerFor]="belowMenu"
     mat-icon-button
     class="example-icon"
     aria-label="Example icon-button with menu icon"
   >
     <mat-icon>menu</mat-icon>
+    <mat-menu #belowMenu="matMenu" yPosition="below">
+      <button mat-menu-item (click)="toggleHome()">
+        <mat-icon>home</mat-icon>
+        Home
+      </button>
+      <button mat-menu-item (click)="toggleCharacter()">
+        <mat-icon>face</mat-icon>
+        Character
+      </button>
+    </mat-menu>
   </button>
   <span>My App</span>
   <span class="example-spacer"></span>
@@ -49,13 +25,20 @@
     <a *ngIf="!(isUserLoggedIn$ | async)" routerLink="/">Login</a>
     <!-- <a *ngIf="!isUserLoggedIn" routerLink="/login">Login</a> -->
   </ul>
-  <button *ngIf="isUserLoggedIn$ | async" mat-button [matMenuTriggerFor]="menu">
+  <button
+    *ngIf="isUserLoggedIn$ | async"
+    mat-button
+    [matMenuTriggerFor]="menu"
+    mat-icon-button
+  >
     <img class="login__image" src="/assets/diluc.png" alt="image" />
   </button>
   <mat-menu #menu="matMenu">
     <button class="button__logout" routerLink="/logout" mat-menu-item>
+      <mat-icon>logout</mat-icon>
       Log out
     </button>
+
     <!-- <a *ngIf="isUserLoggedIn" routerLink="/logout">Logout</a> -->
   </mat-menu>
 </mat-toolbar>

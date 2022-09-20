@@ -84,6 +84,7 @@ export class DialogComponent implements OnInit, OnDestroy {
         takeUntil(this.destroy$),
         tap((activeCharacter) => {
           this.activeCharacter = activeCharacter;
+          console.log('😎 ~ activeCharacter', activeCharacter);
         })
       )
       .subscribe();
@@ -102,6 +103,7 @@ export class DialogComponent implements OnInit, OnDestroy {
     //   )
     //   .subscribe();
     this.elements$ = this.elementService.elements$$;
+    console.log('😎 ~ this.elements$', this.elements$);
 
     // this.weaponTypeService.weaponTypes$$
     //   .pipe(
@@ -112,6 +114,7 @@ export class DialogComponent implements OnInit, OnDestroy {
     //   )
     //   .subscribe();
     this.weaponTypes$ = this.weaponTypeService.weaponTypes$$; // use async pipe
+    console.log('😎 ~ this.weaponTypes$', this.weaponTypes$);
 
     const body = {};
     if (this.activeCharacter) {
@@ -143,7 +146,7 @@ export class DialogComponent implements OnInit, OnDestroy {
     // const formValue = this.productForm.getRawValue();
     // has to call formValue.id, formValue.name, ...
     //* -> use destructuring:
-    const { id, name, element, weaponType, imgUrl } =
+    const { id, name, element, weaponType, imgUrl, elementUrl } =
       this.productForm.getRawValue();
 
     //! this.productForm.getRawValue():
@@ -168,6 +171,7 @@ export class DialogComponent implements OnInit, OnDestroy {
       element: element,
       weapon: weaponType,
       imgUrl: imgUrl,
+      elementUrl: elementUrl,
     };
 
     // if previewImg is existed => upload new image
