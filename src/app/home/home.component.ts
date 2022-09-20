@@ -1,10 +1,9 @@
-import { Component, Input, OnInit, ViewChild } from '@angular/core';
+import { AfterViewInit, Component, OnInit, ViewChild } from '@angular/core';
 
 import { FormGroup } from '@angular/forms';
 import { MatDialog } from '@angular/material/dialog';
 import { MatPaginator } from '@angular/material/paginator';
 import {
-  MatSnackBar,
   MatSnackBarHorizontalPosition,
   MatSnackBarVerticalPosition,
 } from '@angular/material/snack-bar';
@@ -19,7 +18,17 @@ import {
   WeaponType,
   WeaponTypeService,
 } from '@pendo/services';
-import { finalize, firstValueFrom, forkJoin, map, tap } from 'rxjs';
+import {
+  combineLatest,
+  filter,
+  finalize,
+  firstValueFrom,
+  map,
+  Observable,
+  Subject,
+  takeUntil,
+  tap,
+} from 'rxjs';
 import { DeleteConfirmationDialogComponent } from '../delete-confirmation-dialog/delete-confirmation-dialog.component';
 import { DialogComponent } from '../dialog/dialog.component';
 
@@ -29,8 +38,8 @@ import { DialogComponent } from '../dialog/dialog.component';
   styleUrls: ['./home.component.scss'],
 })
 export class HomeComponent implements OnInit {
-  @ViewChild(MatPaginator) paginator!: MatPaginator;
-  @ViewChild(MatSort) sort!: MatSort;
+  @ViewChild(MatPaginator) paginator: MatPaginator;
+  @ViewChild(MatSort) sort: MatSort;
 
   title = 'token-interceptor';
   horizontalPosition: MatSnackBarHorizontalPosition = 'start';
@@ -40,31 +49,57 @@ export class HomeComponent implements OnInit {
   productForm!: FormGroup;
   displayedColumns: string[] = ['img', 'name', 'element', 'weapon', 'action'];
   chars: Character[] = [];
-  dataSource = new MatTableDataSource();
+  dataSource = new MatTableDataSource<Character>();
   elements: Element[] = [];
   imgUrl: UploadImageReq[] = [];
   weaponTypes: WeaponType[] = [];
 
+  destroy$ = new Subject();
+  // create an observable property
+  weaponTypes$: Observable<WeaponType[]>;
+  elements$: Observable<Element[]>;
+  character$: Observable<Character>;
+  characters: Character[];
+
   constructor(
     public dialog: MatDialog,
-    private snackBar: MatSnackBar,
     private characterService: CharacterService,
     private elementService: ElementService,
     private weaponTypeService: WeaponTypeService
   ) {}
 
-  ngAfterViewInit() {
-    this.dataSource.paginator = this.paginator;
+  ngOnDestroy(): void {
+    //* When destroy => set active character to null
+    this.characterService.setActiveCharacter(null);
+    // When the component destroy => trigger this subject
+    // On any observable, check if this subject is triggered => unsubscribe
+    this.destroy$.next(true);
+    this.destroy$.complete();
   }
 
   async ngOnInit(): Promise<void> {
-    forkJoin([
-      this.characterService.getCharacters(),
-      this.elementService.getElements(),
-      this.weaponTypeService.getWeaponType(),
+    // change to combineLatest bz of fetching data first time at app component
+    // listen to data in store, not fetch new APIs
+    combineLatest([
+      this.characterService.characters$$,
+      this.elementService.elements$$,
+      this.weaponTypeService.weaponTypes$$,
     ])
       .pipe(
+        takeUntil(this.destroy$),
+        // only handle available data case
+        //! check until 3 observable done emitting value then handle data
+        filter(([characters, elements, weaponTypes]) => {
+          return (
+            !!characters.length && !!elements.length && !!weaponTypes.length
+          );
+        }),
+        // ([characters, elements, weaponTypes]) is shortcut of (result) that destructuring the value of result
         map(([characters, elements, weaponTypes]) => {
+          console.log('😎 ~ weaponTypes', weaponTypes);
+          console.log('😎 ~ elements', elements);
+          console.log('😎 ~ characters', characters);
+
           this.weaponTypes = weaponTypes;
           this.elements = elements;
 
@@ -80,44 +115,41 @@ export class HomeComponent implements OnInit {
             };
           }) as Character[];
         }),
-
         tap((characters) => {
           this.dataSource.data = characters;
-        }),
+          console.log('😎 ~ this.dataSource.data', this.dataSource.data);
 
-        finalize(() => (this.initializing = false))
+          setTimeout(() => {
+            this.dataSource.paginator = this.paginator;
+          }, 0);
+        }),
+        tap(() => (this.initializing = false))
+        //! combineLatest doesn't use finalize bz it always listen until the time it being complete (takeUntil(this.destroy$))
+        // finalize(() => (this.initializing = false))
       )
       .subscribe();
+
+    // this.characterService.characters$$
+    //   .pipe(
+    //     takeUntil(this.destroy$),
+    //     tap((characters) => {
+    //       this.characters = characters;
+    //       console.log('😎 ~ this.characters', this.characters);
+    //     })
+    //   )
+    //   .subscribe();
+    // this.elements$ = this.elementService.elements$$;
+    // console.log('😎 ~ this.elements$', this.elements$);
+    // this.weaponTypes$ = this.weaponTypeService.weaponTypes$$;
   }
 
   applyFilter(event: Event) {
     const filterValue = (event.target as HTMLInputElement).value;
     this.dataSource.filter = filterValue.trim().toLowerCase();
-
-    //! filter at UI => use client's variables instead of fetch API
-    // forkJoin([this.api.getCharacters(), this.api.getWeaponType()])
-    //   .pipe(
-    //     map(([characters, weaponType]) => {
-    //       this.weaponType = weaponType;
-
-    //       return characters.map((char) => {
-    //         const weapon = weaponType.find((el) => char.weaponTypes === el.id);
-    //         return {
-    //           ...char,
-    //           weaponName: weapon?.name,
-    //         };
-    //       });
-    //     }),
-    //     tap((characters) => {
-    //       this.chars = characters;
-    //       this.dataSource.data = this.chars;
-    //     })
-    //   )
-    //   .subscribe();
+    if (this.dataSource.paginator) {
+      this.dataSource.paginator.firstPage();
+    }
   }
-
-  // forkJoin([this.api.getCharacters()])
-
   // character can be passed or not (if not -> null)
   // edit & create
   storeCharacter(character?: Character) {

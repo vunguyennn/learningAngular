@@ -1,6 +1,12 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { BehaviorSubject, firstValueFrom, Observable, tap } from 'rxjs';
+import {
+  BehaviorSubject,
+  firstValueFrom,
+  Observable,
+  Subject,
+  tap,
+} from 'rxjs';
 import { Character, UploadImageReq } from './character.model';
 
 @Injectable({
@@ -9,6 +15,7 @@ import { Character, UploadImageReq } from './character.model';
 export class CharacterService {
   // private characters: Character[] = [];
   private characters$ = new BehaviorSubject([]); // set init value
+  // private characters$ = new Subject(); // get init value from api
   characters$$ = this.characters$.asObservable() as Observable<Character[]>;
   setCharacters(characters: Character[]) {
     this.characters$.next(characters);
