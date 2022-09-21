@@ -20,6 +20,7 @@ export class RouteGuardService implements CanActivate {
   ) {}
 
   async canActivate(route: ActivatedRouteSnapshot, state: RouterStateSnapshot) {
+    let url: string = state.url;
     if (
       await firstValueFrom(
         this.hardcodedAuthenticationService.loggedIn$.pipe(first())
@@ -27,7 +28,10 @@ export class RouteGuardService implements CanActivate {
     ) {
       return true;
     } else {
-      this.router.navigate(['login']);
+      this.router.navigate(['login'], {
+        queryParams: { returnUrl: state.url },
+      });
+
       return false;
     }
   }

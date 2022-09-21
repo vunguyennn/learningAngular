@@ -4,7 +4,7 @@ import {
   MatSnackBarHorizontalPosition,
   MatSnackBarVerticalPosition,
 } from '@angular/material/snack-bar';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { HardcodedAuthenticationService } from '@pendo/services';
 
 @Component({
@@ -21,14 +21,18 @@ export class LoginComponent implements OnInit {
   horizontalPosition: MatSnackBarHorizontalPosition = 'start';
   verticalPosition: MatSnackBarVerticalPosition = 'bottom';
   loading = false;
+  redirectUrl: string;
 
   constructor(
+    private route: ActivatedRoute,
     private router: Router,
     private hardcodedAuthenticationService: HardcodedAuthenticationService,
     private snackBar: MatSnackBar
   ) {}
 
-  ngOnInit(): void {}
+  ngOnInit(): void {
+    this.redirectUrl = this.route.snapshot.queryParams['returnUrl'] || 'login';
+  }
 
   async handleLogin() {
     this.loading = true;
@@ -48,7 +52,7 @@ export class LoginComponent implements OnInit {
       this.loading = false;
 
       if (loggedIn) {
-        this.router.navigate(['home']);
+        this.router.navigateByUrl(this.redirectUrl);
         this.invalidLogin = false;
       } else {
         this.invalidLogin = true;

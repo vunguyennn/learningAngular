@@ -8,6 +8,7 @@ import { AccountService } from './account/account.service';
 })
 export class HardcodedAuthenticationService {
   loggedIn$ = new BehaviorSubject<boolean>(false);
+  public redirectUrl: string;
 
   constructor(private accountService: AccountService, private router: Router) {}
 
