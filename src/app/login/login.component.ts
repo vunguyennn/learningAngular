@@ -5,7 +5,12 @@ import {
   MatSnackBarVerticalPosition,
 } from '@angular/material/snack-bar';
 import { ActivatedRoute, Router } from '@angular/router';
-import { HardcodedAuthenticationService } from '@pendo/services';
+import {
+  CharacterService,
+  ElementService,
+  HardcodedAuthenticationService,
+  WeaponTypeService,
+} from '@pendo/services';
 
 @Component({
   selector: 'app-login',
@@ -27,12 +32,14 @@ export class LoginComponent implements OnInit {
     private route: ActivatedRoute,
     private router: Router,
     private hardcodedAuthenticationService: HardcodedAuthenticationService,
-    private snackBar: MatSnackBar
+    private snackBar: MatSnackBar,
+    private characterService: CharacterService,
+    private elementService: ElementService,
+    private weaponTypeService: WeaponTypeService
   ) {}
 
   ngOnInit(): void {
     this.redirectUrl = this.route.snapshot.queryParams['returnUrl'] || 'home';
-    console.log('😎 ~ this.redirectUrl', this.redirectUrl);
   }
 
   async handleLogin() {
@@ -55,6 +62,9 @@ export class LoginComponent implements OnInit {
       if (loggedIn) {
         this.router.navigateByUrl(this.redirectUrl);
         this.invalidLogin = false;
+        this.characterService.getCharacters().subscribe();
+        this.elementService.getElements().subscribe();
+        this.weaponTypeService.getWeaponType().subscribe();
       } else {
         this.invalidLogin = true;
       }
