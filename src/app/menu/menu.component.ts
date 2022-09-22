@@ -27,4 +27,8 @@ export class MenuComponent implements OnInit {
   toggleCharacter() {
     this.router.navigate(['character']);
   }
+
+  logout() {
+    this.hardcodedAuthenticationService.logout();
+  }
 }

@@ -8,7 +8,6 @@ import { AccountService } from './account/account.service';
 })
 export class HardcodedAuthenticationService {
   loggedIn$ = new BehaviorSubject<boolean>(false);
-  public redirectUrl: string;
 
   constructor(private accountService: AccountService, private router: Router) {}
 
@@ -30,6 +29,7 @@ export class HardcodedAuthenticationService {
   isUserLoggedIn() {
     const user = sessionStorage.getItem('authenticateUser');
     this.loggedIn$.next(!!user);
+    return !!user;
   }
 
   logout() {

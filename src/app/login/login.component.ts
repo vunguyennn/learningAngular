@@ -40,6 +40,7 @@ export class LoginComponent implements OnInit {
 
   ngOnInit(): void {
     this.redirectUrl = this.route.snapshot.queryParams['returnUrl'] || 'home';
+    console.log('😎 ~ this.redirectUrl', this.redirectUrl);
   }
 
   async handleLogin() {
@@ -61,7 +62,10 @@ export class LoginComponent implements OnInit {
 
       if (loggedIn) {
         this.router.navigateByUrl(this.redirectUrl);
+        console.log('😎 ~ this.redirectUrl', this.redirectUrl);
+
         this.invalidLogin = false;
+
         this.characterService.getCharacters().subscribe();
         this.elementService.getElements().subscribe();
         this.weaponTypeService.getWeaponType().subscribe();

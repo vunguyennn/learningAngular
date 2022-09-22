@@ -24,13 +24,12 @@ export class AppComponent implements OnInit {
 
   // App component will load first => call api one time here
   ngOnInit() {
-    if (!this.hardcodedAuthenticationService.loggedIn$) {
-      this.hardcodedAuthenticationService.isUserLoggedIn();
-      // if (this.hardcodedAuthenticationService.loggedIn$) {
-      //   this.characterService.getCharacters().subscribe();
-      //   this.elementService.getElements().subscribe();
-      //   this.weaponTypeService.getWeaponType().subscribe();
-      // }
+    const loggedIn = this.hardcodedAuthenticationService.isUserLoggedIn();
+    if (loggedIn) {
+      this.characterService.getCharacters().subscribe();
+      this.elementService.getElements().subscribe();
+      this.weaponTypeService.getWeaponType().subscribe();
+    } else {
     }
   }
 }

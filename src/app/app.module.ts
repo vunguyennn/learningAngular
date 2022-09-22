@@ -30,7 +30,7 @@ import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { MatMenuModule } from '@angular/material/menu';
 import { MatRippleModule } from '@angular/material/core';
 import { LoginComponent } from './login/login.component';
-import { ErrorComponent } from './error/error.component';
+import { NotFoundComponent } from './not-found/not-found.component';
 import { HomeComponent } from './home/home.component';
 import { MenuComponent } from './menu/menu.component';
 import { FooterComponent } from './footer/footer.component';
@@ -46,7 +46,7 @@ import { ButtonLoadingDirective } from '@pendo/directives';
     AppComponent,
     LoginComponent,
     WelcomeComponent,
-    ErrorComponent,
+    NotFoundComponent,
     HomeComponent,
     MenuComponent,
     FooterComponent,
