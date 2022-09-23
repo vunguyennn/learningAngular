@@ -22,9 +22,13 @@ export class MenuComponent implements OnInit {
   public onToggleSidenav = () => {};
 
   toggleHome() {
-    this.router.navigate(['home']);
+    this.router.navigate(['']);
   }
   toggleCharacter() {
     this.router.navigate(['character']);
+  }
+
+  logout() {
+    this.hardcodedAuthenticationService.logout();
   }
 }

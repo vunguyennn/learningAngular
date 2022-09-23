@@ -1,5 +1,5 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import {
   Character,
   CharacterByElement,
@@ -38,7 +38,8 @@ export class WelcomeComponent implements OnInit, OnDestroy {
   constructor(
     private router: Router,
     private characterService: CharacterService,
-    private elementService: ElementService
+    private elementService: ElementService,
+    private route: ActivatedRoute
   ) {}
 
   ngOnDestroy(): void {
@@ -96,7 +97,7 @@ export class WelcomeComponent implements OnInit, OnDestroy {
       .subscribe();
   }
 
-  backtoHome() {
-    this.router.navigate(['home']);
+  detailsNavigate(name: string) {
+    this.router.navigate(['character', name]);
   }
 }

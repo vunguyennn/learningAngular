@@ -15,9 +15,6 @@ import {
   styleUrls: ['./app.component.scss'],
 })
 export class AppComponent implements OnInit {
-  public title = 'Hello World';
-  public name = 'Andy';
-
   constructor(
     private hardcodedAuthenticationService: HardcodedAuthenticationService,
     private characterService: CharacterService,
@@ -27,9 +24,12 @@ export class AppComponent implements OnInit {
 
   // App component will load first => call api one time here
   ngOnInit() {
-    this.hardcodedAuthenticationService.isUserLoggedIn();
-    this.characterService.getCharacters().subscribe();
-    this.elementService.getElements().subscribe();
-    this.weaponTypeService.getWeaponType().subscribe();
+    const loggedIn = this.hardcodedAuthenticationService.isUserLoggedIn();
+    if (loggedIn) {
+      this.characterService.getCharacters().subscribe();
+      this.elementService.getElements().subscribe();
+      this.weaponTypeService.getWeaponType().subscribe();
+    } else {
+    }
   }
 }

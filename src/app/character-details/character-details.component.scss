@@ -1,6 +1,6 @@
 .characters__wrapper {
   display: flex;
-  gap: 16px;
+  gap: 20px;
   flex-wrap: wrap;
   padding: 16px;
   margin-top: 15px;
@@ -17,11 +17,6 @@
   min-height: 120px;
   margin-top: 10px;
   margin-bottom: 30px;
-
-  &:hover {
-    transform: scale(1.1);
-    transition: 0.25s ease-in-out;
-  }
 
   .element {
     position: absolute;
@@ -48,22 +43,8 @@
     }
   }
 }
-
-.content__wrapper {
-  margin: 30px;
-  border-radius: 10px;
-  min-height: 350px;
-  background-color: rgb(36, 35, 35);
-}
-
-.text__wrapper {
-  color: rgb(255, 255, 255);
-}
-
-.title__wrapper {
-  color: rgb(255, 255, 255);
+.weapons__wrapper {
   display: flex;
-  align-items: center;
-  gap: 5px;
-  margin-left: 20px;
+  flex-wrap: wrap;
+  margin-left: 50px;
 }

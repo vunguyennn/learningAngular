@@ -30,7 +30,7 @@ import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { MatMenuModule } from '@angular/material/menu';
 import { MatRippleModule } from '@angular/material/core';
 import { LoginComponent } from './login/login.component';
-import { ErrorComponent } from './error/error.component';
+import { NotFoundComponent } from './not-found/not-found.component';
 import { HomeComponent } from './home/home.component';
 import { MenuComponent } from './menu/menu.component';
 import { FooterComponent } from './footer/footer.component';
@@ -40,13 +40,14 @@ import { DialogComponent } from './dialog/dialog.component';
 // import { CapitalizeCasePipe } from 'src/pipes/capitalize-case.pipe';
 import { CapitalizeCasePipe, SanitizerUrlPipe } from '@pendo/pipes';
 import { ButtonLoadingDirective } from '@pendo/directives';
+import { CharacterDetailsComponent } from './character-details/character-details.component';
 
 @NgModule({
   declarations: [
     AppComponent,
     LoginComponent,
     WelcomeComponent,
-    ErrorComponent,
+    NotFoundComponent,
     HomeComponent,
     MenuComponent,
     FooterComponent,
@@ -56,6 +57,7 @@ import { ButtonLoadingDirective } from '@pendo/directives';
     DeleteConfirmationDialogComponent,
     SanitizerUrlPipe,
     CapitalizeCasePipe,
+    CharacterDetailsComponent,
   ],
   imports: [
     BrowserModule,

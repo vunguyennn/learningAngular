@@ -14,7 +14,11 @@
         *ngFor="let char of charsByElement[key].characters"
       >
         <div class="character__image">
-          <img [src]="char.imgUrl" class="character" />
+          <img
+            (click)="detailsNavigate(char.name)"
+            [src]="char.imgUrl"
+            class="character"
+          />
           <img [src]="element.iconUrl" class="element" />
         </div>
         <p class="text__wrapper">{{ char.name | capitalizeCase }}</p>

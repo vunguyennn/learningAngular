@@ -29,6 +29,7 @@ export class HardcodedAuthenticationService {
   isUserLoggedIn() {
     const user = sessionStorage.getItem('authenticateUser');
     this.loggedIn$.next(!!user);
+    return !!user;
   }
 
   logout() {

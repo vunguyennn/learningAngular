@@ -34,7 +34,7 @@
     <img class="login__image" src="/assets/diluc.png" alt="image" />
   </button>
   <mat-menu #menu="matMenu">
-    <button class="button__logout" routerLink="/logout" mat-menu-item>
+    <button class="button__logout" (click)="logout()" mat-menu-item>
       <mat-icon>logout</mat-icon>
       Log out
     </button>

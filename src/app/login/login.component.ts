@@ -4,8 +4,13 @@ import {
   MatSnackBarHorizontalPosition,
   MatSnackBarVerticalPosition,
 } from '@angular/material/snack-bar';
-import { Router } from '@angular/router';
-import { HardcodedAuthenticationService } from '@pendo/services';
+import { ActivatedRoute, Router } from '@angular/router';
+import {
+  CharacterService,
+  ElementService,
+  HardcodedAuthenticationService,
+  WeaponTypeService,
+} from '@pendo/services';
 
 @Component({
   selector: 'app-login',
@@ -21,14 +26,27 @@ export class LoginComponent implements OnInit {
   horizontalPosition: MatSnackBarHorizontalPosition = 'start';
   verticalPosition: MatSnackBarVerticalPosition = 'bottom';
   loading = false;
+  redirectUrl: string;
 
   constructor(
+    private route: ActivatedRoute,
     private router: Router,
     private hardcodedAuthenticationService: HardcodedAuthenticationService,
-    private snackBar: MatSnackBar
+    private snackBar: MatSnackBar,
+    private characterService: CharacterService,
+    private elementService: ElementService,
+    private weaponTypeService: WeaponTypeService
   ) {}
 
-  ngOnInit(): void {}
+  ngOnInit(): void {
+    const loggedIn = this.hardcodedAuthenticationService.isUserLoggedIn();
+    if (loggedIn) {
+      this.router.navigate(['']);
+    } else {
+      this.redirectUrl = this.route.snapshot.queryParams['returnUrl'] || 'home';
+      console.log('😎 ~ this.redirectUrl', this.redirectUrl);
+    }
+  }
 
   async handleLogin() {
     this.loading = true;
@@ -48,8 +66,14 @@ export class LoginComponent implements OnInit {
       this.loading = false;
 
       if (loggedIn) {
-        this.router.navigate(['home']);
+        this.router.navigateByUrl(this.redirectUrl);
+        console.log('😎 ~ this.redirectUrl', this.redirectUrl);
+
         this.invalidLogin = false;
+
+        this.characterService.getCharacters().subscribe();
+        this.elementService.getElements().subscribe();
+        this.weaponTypeService.getWeaponType().subscribe();
       } else {
         this.invalidLogin = true;
       }

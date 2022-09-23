@@ -1,0 +1,22 @@
+.title {
+  font-family: "Trebuchet MS", "Lucida Sans Unicode", "Lucida Grande",
+    "Lucida Sans", Arial, sans-serif;
+  text-align: center;
+}
+
+.not-found__button {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.not-found__image {
+  justify-content: center;
+  align-items: center;
+  display: flex;
+}
+
+.image__notfound {
+  width: 350px;
+  height: 350px;
+}
