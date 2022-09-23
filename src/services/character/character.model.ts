@@ -7,6 +7,9 @@ export interface Character {
   weapon: number; // weapon type id
   imgUrl: string;
   elementUrl: string;
+  weaponUrl?: string;
+  //! REMEMBER TO ADD THIS FIELD TO OTHER COMPONENTS
+  rarity?: number;
 
   // UI
   elementName?: string; // add `?`: the field can be null

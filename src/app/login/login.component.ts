@@ -39,8 +39,13 @@ export class LoginComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    this.redirectUrl = this.route.snapshot.queryParams['returnUrl'] || 'home';
-    console.log('😎 ~ this.redirectUrl', this.redirectUrl);
+    const loggedIn = this.hardcodedAuthenticationService.isUserLoggedIn();
+    if (loggedIn) {
+      this.router.navigate(['']);
+    } else {
+      this.redirectUrl = this.route.snapshot.queryParams['returnUrl'] || 'home';
+      console.log('😎 ~ this.redirectUrl', this.redirectUrl);
+    }
   }
 
   async handleLogin() {

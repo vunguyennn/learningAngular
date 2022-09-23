@@ -8,19 +8,25 @@ import { LogoutComponent } from './logout/logout.component';
 import { WelcomeComponent } from './welcome/character.component';
 import { AppComponent } from './app.component';
 import { PreventLoggedInAccessGuard } from 'src/services/prevent-logged-in-access.guard';
+import { CharacterDetailsComponent } from './character-details/character-details.component';
 
 const routes: Routes = [
   { path: '', component: HomeComponent, canActivate: [RouteGuardService] },
   {
     path: 'login',
     component: LoginComponent,
-    canActivate: [PreventLoggedInAccessGuard],
+    // canActivate: [PreventLoggedInAccessGsuard],
   },
 
   // { path: 'logout', component: LogoutComponent },
   {
     path: 'character',
     component: WelcomeComponent,
+    canActivate: [RouteGuardService],
+  },
+  {
+    path: 'character/:name',
+    component: CharacterDetailsComponent,
     canActivate: [RouteGuardService],
   },
   {

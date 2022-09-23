@@ -40,6 +40,7 @@ import { DialogComponent } from './dialog/dialog.component';
 // import { CapitalizeCasePipe } from 'src/pipes/capitalize-case.pipe';
 import { CapitalizeCasePipe, SanitizerUrlPipe } from '@pendo/pipes';
 import { ButtonLoadingDirective } from '@pendo/directives';
+import { CharacterDetailsComponent } from './character-details/character-details.component';
 
 @NgModule({
   declarations: [
@@ -56,6 +57,7 @@ import { ButtonLoadingDirective } from '@pendo/directives';
     DeleteConfirmationDialogComponent,
     SanitizerUrlPipe,
     CapitalizeCasePipe,
+    CharacterDetailsComponent,
   ],
   imports: [
     BrowserModule,

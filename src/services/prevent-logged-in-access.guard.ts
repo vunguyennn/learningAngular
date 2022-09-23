@@ -6,7 +6,6 @@ import {
   RouterStateSnapshot,
   UrlTree,
 } from '@angular/router';
-import { Observable } from 'rxjs';
 import { HardcodedAuthenticationService } from './hardcoded-authentication.service';
 
 @Injectable({

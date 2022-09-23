@@ -1,0 +1,50 @@
+.characters__wrapper {
+  display: flex;
+  gap: 20px;
+  flex-wrap: wrap;
+  padding: 16px;
+  margin-top: 15px;
+}
+
+.character {
+  border-radius: 50%;
+  margin-left: 20px;
+
+  width: 120px;
+  position: relative;
+  flex-wrap: wrap;
+  text-align: center;
+  min-height: 120px;
+  margin-top: 10px;
+  margin-bottom: 30px;
+
+  .element {
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    background-color: transparent;
+  }
+
+  .character__image {
+    text-align: center;
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: transparent;
+
+    .avatar {
+      border-radius: 50%;
+      width: 100%;
+      height: 100%;
+    }
+  }
+}
+.weapons__wrapper {
+  display: flex;
+  flex-wrap: wrap;
+  margin-left: 50px;
+}
