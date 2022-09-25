@@ -1,34 +1,35 @@
 import { Component, OnInit } from '@angular/core';
-import { HardcodedAuthenticationService } from '@pendo/services';
-import { Observable } from 'rxjs';
+import { MatSnackBar } from '@angular/material/snack-bar';
 import { Router } from '@angular/router';
+import { AccountService, SNACKBAR_POSITION } from '@pendo/services';
+import { tap } from 'rxjs';
 @Component({
   selector: 'app-menu',
   templateUrl: './menu.component.html',
   styleUrls: ['./menu.component.scss'],
 })
 export class MenuComponent implements OnInit {
-  isUserLoggedIn$!: Observable<boolean>;
-
   constructor(
-    private hardcodedAuthenticationService: HardcodedAuthenticationService,
-    private router: Router
+    public accountService: AccountService,
+    private router: Router,
+    private snackBar: MatSnackBar
   ) {}
 
-  ngOnInit(): void {
-    this.isUserLoggedIn$ = this.hardcodedAuthenticationService.loggedIn$;
-  }
-
-  public onToggleSidenav = () => {};
-
-  toggleHome() {
-    this.router.navigate(['']);
-  }
-  toggleCharacter() {
-    this.router.navigate(['character']);
-  }
+  ngOnInit(): void {}
 
   logout() {
-    this.hardcodedAuthenticationService.logout();
+    this.accountService
+      .logout()
+      .pipe(
+        tap((_) => {
+          this.router.navigate(['/login']);
+          this.snackBar.open(
+            `Logout successfully`,
+            undefined,
+            SNACKBAR_POSITION
+          );
+        })
+      )
+      .subscribe();
   }
 }

@@ -13,12 +13,13 @@ import {
   CharacterService,
   Element,
   ElementService,
+  SNACKBAR_POSITION,
   UploadImageReq,
   WeaponType,
   WeaponTypeService,
 } from '@pendo/services';
-import { defer, firstValueFrom, Observable, Subject } from 'rxjs';
-import { finalize, takeUntil, tap } from 'rxjs/operators';
+import { defer, firstValueFrom, Observable, Subject, throwError } from 'rxjs';
+import { catchError, finalize, takeUntil, tap } from 'rxjs/operators';
 
 @Component({
   selector: 'app-dialog',
@@ -201,12 +202,16 @@ export class DialogComponent implements OnInit, OnDestroy {
           this.snackBar.open(
             `${this.activeCharacter ? 'Updated' : 'Created'} successfully !!!`,
             '🤑🤑🤑',
-            {
-              horizontalPosition: this.horizontalPosition,
-              verticalPosition: this.verticalPosition,
-            }
+            SNACKBAR_POSITION
           );
           this.dialogRef.close(true);
+        }),
+        catchError((e) => {
+          if (e.status === 419) {
+            this.dialogRef.close();
+          }
+
+          return throwError(() => e);
         })
       )
       .subscribe();

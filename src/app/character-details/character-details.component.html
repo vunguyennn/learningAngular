@@ -6,7 +6,10 @@
         <img [src]="character.elementUrl" class="element" />
       </div>
     </div>
-    <h1>{{ character.name | capitalizeCase }} ({{ character.rarity }}★)</h1>
+    <h1 class="character__title">
+      {{ character.name | capitalizeCase }} ({{ character.rarity }}★)
+      <img [src]="character.weaponUrl" />
+    </h1>
   </div>
   <div class="weapons__wrapper">
     <h2>Weapon</h2>

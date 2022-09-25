@@ -8,5 +8,5 @@ export * from './weapon/weapon.model';
 export * from './weapon/weapon.service';
 export * from './weapon-type/weapon-type.model';
 export * from './weapon-type/weapon-type.service';
-export * from './hardcoded-authentication.service';
 export * from './route-guard.service';
+export * from './constant';

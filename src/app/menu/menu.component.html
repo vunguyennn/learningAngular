@@ -1,6 +1,5 @@
 <mat-toolbar>
   <button
-    *ngIf="isUserLoggedIn$ | async"
     mat-button
     [matMenuTriggerFor]="belowMenu"
     mat-icon-button
@@ -9,11 +8,11 @@
   >
     <mat-icon>menu</mat-icon>
     <mat-menu #belowMenu="matMenu" yPosition="below">
-      <button mat-menu-item (click)="toggleHome()">
+      <button mat-menu-item routerLink="/">
         <mat-icon>home</mat-icon>
         Home
       </button>
-      <button mat-menu-item (click)="toggleCharacter()">
+      <button mat-menu-item routerLink="/character">
         <mat-icon>face</mat-icon>
         Character
       </button>
@@ -21,12 +20,11 @@
   </button>
   <span>My App</span>
   <span class="example-spacer"></span>
-  <ul>
-    <a *ngIf="!(isUserLoggedIn$ | async)" routerLink="/">Login</a>
-    <!-- <a *ngIf="!isUserLoggedIn" routerLink="/login">Login</a> -->
-  </ul>
+  <!-- <ul *ngIf="!(accountService.loggedIn$ | async)">
+    <a routerLink="/">Login</a>
+  </ul> -->
   <button
-    *ngIf="isUserLoggedIn$ | async"
+    *ngIf="accountService.loggedIn$ | async"
     mat-button
     [matMenuTriggerFor]="menu"
     mat-icon-button
@@ -38,7 +36,5 @@
       <mat-icon>logout</mat-icon>
       Log out
     </button>
-
-    <!-- <a *ngIf="isUserLoggedIn" routerLink="/logout">Logout</a> -->
   </mat-menu>
 </mat-toolbar>
