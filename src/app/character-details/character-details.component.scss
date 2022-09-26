@@ -43,6 +43,11 @@
     }
   }
 }
+.character__title {
+  color: rgb(3, 25, 25);
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+  display: flex;
+}
 .weapons__wrapper {
   display: flex;
   flex-wrap: wrap;

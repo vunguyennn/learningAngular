@@ -6,11 +6,13 @@ import {
 } from '@angular/material/snack-bar';
 import { ActivatedRoute, Router } from '@angular/router';
 import {
+  AccountService,
   CharacterService,
   ElementService,
-  HardcodedAuthenticationService,
+  SNACKBAR_POSITION,
   WeaponTypeService,
 } from '@pendo/services';
+import { finalize, tap } from 'rxjs';
 
 @Component({
   selector: 'app-login',
@@ -23,66 +25,40 @@ export class LoginComponent implements OnInit {
   errorMessageLogin = 'Invalid username or password';
   invalidLogin = false;
   hide = true;
-  horizontalPosition: MatSnackBarHorizontalPosition = 'start';
-  verticalPosition: MatSnackBarVerticalPosition = 'bottom';
   loading = false;
   redirectUrl: string;
 
   constructor(
     private route: ActivatedRoute,
     private router: Router,
-    private hardcodedAuthenticationService: HardcodedAuthenticationService,
     private snackBar: MatSnackBar,
-    private characterService: CharacterService,
-    private elementService: ElementService,
-    private weaponTypeService: WeaponTypeService
+    private accountService: AccountService
   ) {}
 
   ngOnInit(): void {
-    const loggedIn = this.hardcodedAuthenticationService.isUserLoggedIn();
-    if (loggedIn) {
-      this.router.navigate(['']);
-    } else {
-      this.redirectUrl = this.route.snapshot.queryParams['returnUrl'] || 'home';
-      console.log('😎 ~ this.redirectUrl', this.redirectUrl);
-    }
+    this.redirectUrl = this.route.snapshot.queryParams['returnUrl'] || 'home';
   }
 
   async handleLogin() {
     this.loading = true;
 
-    try {
-      const loggedIn: boolean =
-        await this.hardcodedAuthenticationService.authenticate(
-          this.username,
-          this.password
-        );
+    this.accountService
+      .login({
+        username: this.username,
+        password: this.password,
+      })
+      .pipe(
+        tap((_) => {
+          this.snackBar.open(
+            `Login successfully`,
+            undefined,
+            SNACKBAR_POSITION
+          );
 
-      this.snackBar.open(loggedIn ? 'ok' : 'no ok', undefined, {
-        horizontalPosition: this.horizontalPosition,
-        verticalPosition: this.verticalPosition,
-      });
-
-      this.loading = false;
-
-      if (loggedIn) {
-        this.router.navigateByUrl(this.redirectUrl);
-        console.log('😎 ~ this.redirectUrl', this.redirectUrl);
-
-        this.invalidLogin = false;
-
-        this.characterService.getCharacters().subscribe();
-        this.elementService.getElements().subscribe();
-        this.weaponTypeService.getWeaponType().subscribe();
-      } else {
-        this.invalidLogin = true;
-      }
-    } catch (e) {
-      this.loading = false;
-      this.snackBar.open('Invalid username or password', undefined, {
-        horizontalPosition: this.horizontalPosition,
-        verticalPosition: this.verticalPosition,
-      });
-    }
+          this.router.navigateByUrl(this.redirectUrl);
+        }),
+        finalize(() => (this.loading = false))
+      )
+      .subscribe();
   }
 }

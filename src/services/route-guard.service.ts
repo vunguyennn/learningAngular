@@ -1,35 +1,32 @@
-import { ThisReceiver } from '@angular/compiler';
 import { Injectable } from '@angular/core';
 import {
   ActivatedRouteSnapshot,
   CanActivate,
-  Route,
   Router,
   RouterStateSnapshot,
-  UrlTree,
 } from '@angular/router';
-import { first, firstValueFrom, tap } from 'rxjs';
-import { HardcodedAuthenticationService } from './hardcoded-authentication.service';
+import { firstValueFrom, tap } from 'rxjs';
+import { AccountService } from './account/account.service';
 
 @Injectable({
   providedIn: 'root',
 })
 export class RouteGuardService implements CanActivate {
-  constructor(
-    public router: Router,
-    public hardcodedAuthenticationService: HardcodedAuthenticationService
-  ) {}
+  constructor(public router: Router, private accountService: AccountService) {}
 
-  async canActivate(route: ActivatedRouteSnapshot, state: RouterStateSnapshot) {
-    const loggedIn = this.hardcodedAuthenticationService.isUserLoggedIn();
-    console.log('😎 ~ loggedIn', loggedIn);
-    if (loggedIn) {
-      return true;
-    } else {
-      this.router.navigate(['login'], {
-        queryParams: { returnUrl: state.url },
-      });
-      return false;
-    }
+  canActivate(route: ActivatedRouteSnapshot, state: RouterStateSnapshot) {
+    return this.accountService.loggedIn$.pipe(
+      tap((isLoggedIn) => {
+        if (isLoggedIn) {
+          return true;
+        } else {
+          this.router.navigate(['login'], {
+            queryParams: { returnUrl: state.url },
+          });
+
+          return false;
+        }
+      })
+    );
   }
 }
