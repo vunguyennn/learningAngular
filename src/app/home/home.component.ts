@@ -91,7 +91,7 @@ export class HomeComponent implements OnInit {
         //! check until 3 observable done emitting value then handle data
         filter(([characters, elements, weaponTypes]) => {
           return (
-            !!characters.length && !!elements.length && !!weaponTypes.length
+            !!characters?.length && !!elements?.length && !!weaponTypes?.length
           );
         }),
         // ([characters, elements, weaponTypes]) is shortcut of (result) that destructuring the value of result
