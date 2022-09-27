@@ -1,5 +1,6 @@
 <mat-toolbar>
   <button
+    *ngIf="accountService.loggedIn$ | async"
     mat-button
     [matMenuTriggerFor]="belowMenu"
     mat-icon-button
@@ -32,9 +33,14 @@
     <img class="login__image" src="/assets/diluc.png" alt="image" />
   </button>
   <mat-menu #menu="matMenu">
-    <button class="button__logout" (click)="logout()" mat-menu-item>
-      <mat-icon>logout</mat-icon>
-      Log out
-    </button>
-  </mat-menu>
+    <p class="text__avatar">
+      {{ accountService.decodedToken.username }}
+    </p>
+    <p>
+      <button class="button__logout" (click)="logout()" mat-menu-item>
+        <mat-icon>logout</mat-icon>
+        Log out
+      </button>
+    </p></mat-menu
+  >
 </mat-toolbar>

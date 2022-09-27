@@ -5,18 +5,19 @@ import {
   Router,
   RouterStateSnapshot,
 } from '@angular/router';
-import { firstValueFrom, tap } from 'rxjs';
+import { tap } from 'rxjs';
 import { AccountService } from './account/account.service';
 
 @Injectable({
   providedIn: 'root',
 })
-export class RouteGuardService implements CanActivate {
+export class RoleGuard implements CanActivate {
   constructor(public router: Router, private accountService: AccountService) {}
+
   canActivate(route: ActivatedRouteSnapshot, state: RouterStateSnapshot) {
-    return this.accountService.loggedIn$.pipe(
-      tap((isLoggedIn) => {
-        if (isLoggedIn) {
+    return this.accountService.isAdmin$.pipe(
+      tap((isAdmin$) => {
+        if (isAdmin$) {
           return true;
         } else {
           this.router.navigate(['login'], {

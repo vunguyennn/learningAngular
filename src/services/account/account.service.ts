@@ -2,6 +2,7 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { CookieService } from 'ngx-cookie-service';
 import { BehaviorSubject, tap } from 'rxjs';
+import jwt_decode from 'jwt-decode';
 
 import {
   ACCESS_TOKEN,
@@ -15,14 +16,26 @@ import {
 })
 export class AccountService {
   loggedIn$ = new BehaviorSubject<boolean>(false);
+  isAdmin$ = new BehaviorSubject<boolean>(false);
+  accessToken = this.cookieService.get(ACCESS_TOKEN);
+  decodedToken = this.getDecodedAccessToken(this.accessToken);
 
   constructor(private http: HttpClient, private cookieService: CookieService) {}
+
+  getDecodedAccessToken(token: string): any {
+    try {
+      return jwt_decode(token);
+    } catch (Error) {
+      return null;
+    }
+  }
 
   isLoggedIn() {
     const accessToken = this.cookieService.get(ACCESS_TOKEN);
     const refreshToken = this.cookieService.get(REFRESH_TOKEN);
     const isLoggedIn = !!(accessToken && refreshToken);
     this.loggedIn$.next(isLoggedIn);
+
     return isLoggedIn;
   }
 
@@ -31,6 +44,8 @@ export class AccountService {
       tap(({ accessToken, refreshToken }) => {
         this.cookieService.set(ACCESS_TOKEN, accessToken);
         this.cookieService.set(REFRESH_TOKEN, refreshToken);
+        const decodedToken = this.getDecodedAccessToken(accessToken);
+        this.isAdmin$.next(decodedToken.isAdmin);
         this.loggedIn$.next(true);
       })
     );
@@ -44,6 +59,10 @@ export class AccountService {
         this.loggedIn$.next(false);
       })
     );
+  }
+
+  register(account: Account) {
+    return this.http.post<Account>('api/account/regist', account);
   }
 
   refreshToken(refreshToken: string) {

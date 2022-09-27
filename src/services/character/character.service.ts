@@ -17,6 +17,7 @@ export class CharacterService {
   private characters$ = new BehaviorSubject([]); // set init value
   // private characters$ = new Subject(); // get init value from api
   characters$$ = this.characters$.asObservable() as Observable<Character[]>;
+
   setCharacters(characters: Character[]) {
     this.characters$.next(characters);
   }
