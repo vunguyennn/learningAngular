@@ -19,8 +19,10 @@
       </button>
     </mat-menu>
   </button>
-  <span>My App</span>
+  <span>My App </span>
+
   <span class="example-spacer"></span>
+
   <!-- <ul *ngIf="!(accountService.loggedIn$ | async)">
     <a routerLink="/">Login</a>
   </ul> -->
@@ -33,10 +35,8 @@
     <img class="login__image" src="/assets/diluc.png" alt="image" />
   </button>
   <mat-menu #menu="matMenu">
-    <p class="text__avatar">
-      {{ accountService.decodedToken.username }}
-    </p>
     <p>
+      {{ accountService.userName$ | async }}
       <button class="button__logout" (click)="logout()" mat-menu-item>
         <mat-icon>logout</mat-icon>
         Log out

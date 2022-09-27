@@ -17,6 +17,7 @@ import {
 export class AccountService {
   loggedIn$ = new BehaviorSubject<boolean>(false);
   isAdmin$ = new BehaviorSubject<boolean>(false);
+  userName$ = new BehaviorSubject<string>('');
   accessToken = this.cookieService.get(ACCESS_TOKEN);
   decodedToken = this.getDecodedAccessToken(this.accessToken);
 
@@ -35,7 +36,6 @@ export class AccountService {
     const refreshToken = this.cookieService.get(REFRESH_TOKEN);
     const isLoggedIn = !!(accessToken && refreshToken);
     this.loggedIn$.next(isLoggedIn);
-
     return isLoggedIn;
   }
 
@@ -46,6 +46,7 @@ export class AccountService {
         this.cookieService.set(REFRESH_TOKEN, refreshToken);
         const decodedToken = this.getDecodedAccessToken(accessToken);
         this.isAdmin$.next(decodedToken.isAdmin);
+        this.userName$.next(decodedToken.username);
         this.loggedIn$.next(true);
       })
     );

@@ -38,7 +38,7 @@ const routes: Routes = [
     path: 'not-found',
     component: NotFoundComponent,
   },
-  { path: '', redirectTo: 'character', pathMatch: 'full' },
+  { path: '', redirectTo: 'home', pathMatch: 'full' },
   { path: '**', redirectTo: 'not-found' },
 ];
 

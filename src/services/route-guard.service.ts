@@ -16,6 +16,7 @@ export class RouteGuardService implements CanActivate {
   canActivate(route: ActivatedRouteSnapshot, state: RouterStateSnapshot) {
     return this.accountService.loggedIn$.pipe(
       tap((isLoggedIn) => {
+        console.log('😎 ~ isLoggedIn', isLoggedIn);
         if (isLoggedIn) {
           return true;
         } else {

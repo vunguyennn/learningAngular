@@ -8,10 +8,11 @@
     </div>
     <h1 class="character__title">
       {{ character.name | capitalizeCase }} ({{ character.rarity }}★)
-      <img [src]="character.weaponUrl" />
+      <div>
+        <p>{{ character.weaponName }}</p>
+      </div>
     </h1>
   </div>
-  <div class="weapons__wrapper">
-    <h2>Weapon</h2>
-  </div>
+  <div class="weapons__wrapper"></div>
 </div>
+<img [src]="character.weaponUrl" />

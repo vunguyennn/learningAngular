@@ -17,13 +17,10 @@ export class RoleGuard implements CanActivate {
   canActivate(route: ActivatedRouteSnapshot, state: RouterStateSnapshot) {
     return this.accountService.isAdmin$.pipe(
       tap((isAdmin$) => {
+        console.log('😎 ~ isAdmin', isAdmin$);
         if (isAdmin$) {
           return true;
         } else {
-          this.router.navigate(['login'], {
-            queryParams: { returnUrl: state.url },
-          });
-
           return false;
         }
       })
