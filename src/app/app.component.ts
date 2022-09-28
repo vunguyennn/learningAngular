@@ -11,6 +11,8 @@ import {
   combineLatest,
   distinctUntilChanged,
   filter,
+  first,
+  firstValueFrom,
   Subject,
   takeUntil,
   tap,
@@ -51,12 +53,16 @@ export class AppComponent implements OnInit, OnDestroy {
         filter(
           ([event, loggedIn]) => event instanceof NavigationEnd && !!loggedIn
         ),
-        tap(([event, _]) => {
+        tap(async ([event, _]) => {
           if ((event as NavigationEnd).urlAfterRedirects === '/login') {
             this.router.navigate(['/']);
           }
 
-          if (this.afterInit) {
+          const characters = await firstValueFrom(this.characterService.characters$$.pipe(first()));
+          const elements = await firstValueFrom(this.elementService.elements$$.pipe(first()));
+          const weaponTypes = await firstValueFrom(this.weaponTypeService.weaponTypes$$.pipe(first()));
+
+          if (this.afterInit && characters !== null && elements !== null && weaponTypes !== null) {
             return;
           }
 

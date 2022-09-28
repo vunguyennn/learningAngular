@@ -14,7 +14,7 @@ import { Character, UploadImageReq } from './character.model';
 })
 export class CharacterService {
   // private characters: Character[] = [];
-  private characters$ = new BehaviorSubject([]); // set init value
+  private characters$ = new BehaviorSubject(null); // set init value
   // private characters$ = new Subject(); // get init value from api
   characters$$ = this.characters$.asObservable() as Observable<Character[]>;
 

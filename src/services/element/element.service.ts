@@ -8,7 +8,7 @@ import { Element } from './element.model';
 })
 export class ElementService {
   // private elements: Element[] = [];
-  private elements$ = new BehaviorSubject([]);
+  private elements$ = new BehaviorSubject(null);
   // private elements$ = new Subject<Element[]>();
 
   //! Change from behavior subject to subject bz

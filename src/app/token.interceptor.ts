@@ -11,8 +11,11 @@ import { Router } from '@angular/router';
 import {
   ACCESS_TOKEN,
   AccountService,
+  CharacterService,
+  ElementService,
   REFRESH_TOKEN,
   SNACKBAR_POSITION,
+  WeaponTypeService,
 } from '@pendo/services';
 import { CookieService } from 'ngx-cookie-service';
 import {
@@ -36,7 +39,10 @@ export class TokenInterceptor implements HttpInterceptor {
     private snackBar: MatSnackBar,
     private cookieService: CookieService,
     private accountService: AccountService,
-    private router: Router
+    private router: Router,
+    private characterService: CharacterService,
+    private elementService: ElementService,
+    private weaponTypeService: WeaponTypeService
   ) {}
 
   intercept(
@@ -88,6 +94,10 @@ export class TokenInterceptor implements HttpInterceptor {
                 this.cookieService.delete(REFRESH_TOKEN);
                 this.accountService.loggedIn$.next(false);
                 this.router.navigate(['login']);
+                this.characterService.setCharacters(null);
+                this.elementService.setElements(null);
+                this.weaponTypeService.setWeaponTypes(null);
+
                 return throwError(() => e);
               }),
               finalize(() => (this.refreshingTokens = false))

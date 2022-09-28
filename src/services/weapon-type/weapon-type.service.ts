@@ -7,7 +7,7 @@ import { WeaponType } from './weapon-type.model';
   providedIn: 'root',
 })
 export class WeaponTypeService {
-  private weaponTypes$ = new BehaviorSubject<WeaponType[]>([]);
+  private weaponTypes$ = new BehaviorSubject<WeaponType[]>(null);
   weaponTypes$$ = this.weaponTypes$.asObservable();
 
   setWeaponTypes(weaponTypes: WeaponType[]) {
