@@ -5,6 +5,29 @@
       <input matInput (keyup)="applyFilter($event)" placeholder="Name" #input />
     </mat-form-field>
 
+    <mat-form-field appearance="standard">
+      <mat-label>Vision</mat-label>
+
+      <mat-select (selectionChange)="filterElement($event)">
+        <mat-option value="">clear</mat-option>
+        <mat-option *ngFor="let el of elements" [value]="el.name">{{
+          el.name
+        }}</mat-option>
+      </mat-select>
+    </mat-form-field>
+
+    <mat-form-field appearance="standard">
+      <mat-label>Weapon</mat-label>
+
+      <mat-select (selectionChange)="filterWeapon($event)">
+        <mat-option value="">clear</mat-option>
+
+        <mat-option *ngFor="let we of weaponTypes" [value]="we.name">{{
+          we.name
+        }}</mat-option>
+      </mat-select>
+    </mat-form-field>
+
     <div class="button_search">
       <button
         [disabled]="initializing"

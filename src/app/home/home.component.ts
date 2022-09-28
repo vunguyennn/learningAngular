@@ -8,7 +8,7 @@ import {
   MatSnackBarVerticalPosition,
 } from '@angular/material/snack-bar';
 import { MatSort } from '@angular/material/sort';
-import { MatTableDataSource } from '@angular/material/table';
+import { MatTable, MatTableDataSource } from '@angular/material/table';
 import {
   Character,
   CharacterService,
@@ -31,6 +31,7 @@ import {
 } from 'rxjs';
 import { DeleteConfirmationDialogComponent } from '../delete-confirmation-dialog/delete-confirmation-dialog.component';
 import { DialogComponent } from '../dialog/dialog.component';
+import * as _ from 'lodash';
 
 @Component({
   selector: 'home',
@@ -50,6 +51,7 @@ export class HomeComponent implements OnInit {
   displayedColumns: string[] = ['img', 'name', 'element', 'weapon', 'action'];
   chars: Character[] = [];
   dataSource = new MatTableDataSource<Character>();
+  filterData = new MatTableDataSource<Character>();
   elements: Element[] = [];
   imgUrl: UploadImageReq[] = [];
   weaponTypes: WeaponType[] = [];
@@ -117,6 +119,8 @@ export class HomeComponent implements OnInit {
         }),
         tap((characters) => {
           this.dataSource.data = characters;
+          this.filterData = this.dataSource;
+
           console.log('😎 ~ this.dataSource.data', this.dataSource.data);
 
           setTimeout(() => {
@@ -287,5 +291,18 @@ export class HomeComponent implements OnInit {
         elementName: element.name,
       };
     }) as Character[];
+  }
+
+  filterElement($event: any) {
+    const filteredData = _.filter(this.filterData.data, (item) => {
+      return item.elementName == $event.value;
+    });
+    this.dataSource = new MatTableDataSource(filteredData);
+  }
+  filterWeapon($event: any) {
+    const filteredData = _.filter(this.filterData.data, (item) => {
+      return item.weaponName == $event.value;
+    });
+    this.dataSource = new MatTableDataSource(filteredData);
   }
 }
