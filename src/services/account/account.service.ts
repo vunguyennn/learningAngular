@@ -39,10 +39,14 @@ export class AccountService {
     const isLoggedIn = !!(accessToken && refreshToken);
     const decodedToken = this.getDecodedAccessToken(accessToken);
     console.log('😎 ~ decodedToken', decodedToken);
-    this.setAccount({
-      username: decodedToken.username,
-      isAdmin: decodedToken.isAdmin,
-    });
+
+    if (decodedToken) {
+      this.setAccount({
+        username: decodedToken.username,
+        isAdmin: decodedToken.isAdmin,
+      });
+    }
+   
     this.loggedIn$.next(isLoggedIn);
     return isLoggedIn;
   }
@@ -55,10 +59,12 @@ export class AccountService {
         const decodedToken = this.getDecodedAccessToken(accessToken);
         console.log('😎 ~ decodedToken', decodedToken);
 
-        this.setAccount({
-          username: decodedToken.username,
-          isAdmin: decodedToken.isAdmin,
-        });
+        if (decodedToken) {
+          this.setAccount({
+            username: decodedToken.username,
+            isAdmin: decodedToken.isAdmin,
+          });
+        }
 
         this.loggedIn$.next(true);
       })
@@ -89,10 +95,12 @@ export class AccountService {
           const decodedToken = this.getDecodedAccessToken(tokens.accessToken);
           console.log('😎 ~ decodedToken', decodedToken);
 
-          this.setAccount({
-            username: decodedToken.username,
-            isAdmin: decodedToken.isAdmin,
-          });
+          if (decodedToken) {
+            this.setAccount({
+              username: decodedToken.username,
+              isAdmin: decodedToken.isAdmin,
+            });
+          }
         })
       );
   }

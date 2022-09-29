@@ -52,9 +52,9 @@ import { MatSelect } from '@angular/material/select';
 export class HomeComponent implements OnInit {
   @ViewChild(MatPaginator) paginator: MatPaginator;
   @ViewChild(MatSort) sort: MatSort;
-  @ViewChild('weapon') weapon: MatSelect;
-  @ViewChild('element') element: MatSelect;
-  @ViewChild('inputName') inputName: ElementRef;
+  @ViewChild('weapon', {static: true}) weapon: MatSelect;
+  @ViewChild('element', {static: true}) element: MatSelect;
+  @ViewChild('inputName', {static: true}) inputName: ElementRef;
 
   title = 'token-interceptor';
   horizontalPosition: MatSnackBarHorizontalPosition = 'start';
