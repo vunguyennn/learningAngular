@@ -5,7 +5,7 @@ import {
   Router,
   RouterStateSnapshot,
 } from '@angular/router';
-import { firstValueFrom, tap } from 'rxjs';
+import { combineLatest, firstValueFrom, of, switchMap, tap } from 'rxjs';
 import { AccountService } from './account/account.service';
 
 @Injectable({
@@ -13,18 +13,30 @@ import { AccountService } from './account/account.service';
 })
 export class RouteGuardService implements CanActivate {
   constructor(public router: Router, private accountService: AccountService) {}
-
   canActivate(route: ActivatedRouteSnapshot, state: RouterStateSnapshot) {
-    return this.accountService.loggedIn$.pipe(
-      tap((isLoggedIn) => {
+    return combineLatest([
+      this.accountService.loggedIn$,
+      this.accountService.account$$,
+    ]).pipe(
+      switchMap(([isLoggedIn, account]) => {
         if (isLoggedIn) {
-          return true;
+          if (route.routeConfig.path !== 'home') {
+            return of(true);
+          }
+
+          if (!!account?.isAdmin) {
+            return of(true);
+          }
+
+          this.router.navigate(['character']);
+
+          return of(false);
         } else {
           this.router.navigate(['login'], {
             queryParams: { returnUrl: state.url },
           });
 
-          return false;
+          return of(false);
         }
       })
     );

@@ -1,11 +1,11 @@
-<img
+<!-- <img
   class="text-center"
   width="400"
   height="400"
   src="/assets/hillichurls.jpg"
   alt="image"
-/>
-
+/> -->
+<h1>Sign up</h1>
 <div class="d-flex-center">
   <body class="mt-top-2">
     <div>
@@ -35,30 +35,23 @@
       </mat-form-field>
     </div>
 
+    <div class="button__divider"></div>
+
     <button
-      class="button__login"
+      (click)="register()"
       [loading]="loading"
       [disabled]="loading"
-      [btnContent]="'Login'"
-      color="primary"
-      mat-raised-button
-      (click)="handleLogin()"
-    ></button>
-
-    <div class="button__divider">
-      <mat-card-title>
-        <p style="font-size: 15px; color: black; margin-top: 25px">or</p>
-      </mat-card-title>
-      <mat-divider></mat-divider>
-    </div>
-
-    <button
+      [btnContent]="'Register'"
       class="button__register"
-      (click)="registerNavigate()"
+      color="primary"
       mat-raised-button
     >
       Register
     </button>
+
+    <p class="button__register">
+      Already have an account? <a routerLink="/">Sign in</a>
+    </p>
   </body>
   <p *ngIf="invalidLogin">{{ errorMessageLogin }}</p>
 </div>

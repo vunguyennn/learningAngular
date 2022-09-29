@@ -22,10 +22,11 @@
     position: absolute;
     top: 0;
     right: 0;
-    width: 30px;
-    height: 30px;
+    width: 20px;
+    height: 20px;
     border-radius: 50%;
-    background-color: transparent;
+    padding: 5px;
+    background-color: #ccc;
   }
 
   .character__image {
@@ -43,13 +44,26 @@
     }
   }
 }
+
 .character__title {
   color: rgb(3, 25, 25);
   font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
-  display: flex;
-}
-.weapons__wrapper {
-  display: flex;
-  flex-wrap: wrap;
-  margin-left: 50px;
+  display: block;
+
+  .weapon__wrapper {
+    display: flex;
+    gap: 16px;
+    align-items: center;
+
+    p {
+      font-size: 16px;
+      font-weight: normal;
+    }
+
+    img {
+      height: 20px;
+      width: 20px;
+      border-radius: 50%;
+    }
+  }
 }

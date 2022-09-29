@@ -2,7 +2,29 @@
   <div class="search-content">
     <mat-form-field appearance="standard">
       <mat-label>Search</mat-label>
-      <input matInput (keyup)="applyFilter($event)" placeholder="Name" #input />
+      <input matInput placeholder="Name" #inputName />
+    </mat-form-field>
+
+    <mat-form-field appearance="standard">
+      <mat-label>Vision</mat-label>
+
+      <mat-select #element>
+        <mat-option [value]="-1">All</mat-option>
+        <mat-option *ngFor="let el of elements" [value]="el.id">{{
+          el.name | capitalizeCase
+        }}</mat-option>
+      </mat-select>
+    </mat-form-field>
+
+    <mat-form-field appearance="standard">
+      <mat-label>Weapon</mat-label>
+
+      <mat-select #weapon>
+        <mat-option [value]="-1">All</mat-option>
+        <mat-option *ngFor="let we of weaponTypes" [value]="we.id">{{
+          we.name | capitalizeCase
+        }}</mat-option>
+      </mat-select>
     </mat-form-field>
 
     <div class="button_search">
@@ -93,7 +115,7 @@
 
       <tr class="mat-row" *matNoDataRow>
         <td class="mat-cell" colspan="5">
-          No data matching the filter "{{ input.value }}"
+          No data matching the filter "{{ inputName.value }}"
         </td>
       </tr>
     </table>

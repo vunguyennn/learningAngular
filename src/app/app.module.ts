@@ -40,6 +40,8 @@ import { ButtonLoadingDirective } from '@pendo/directives';
 import { CapitalizeCasePipe, SanitizerUrlPipe } from '@pendo/pipes';
 import { CookieService } from 'ngx-cookie-service';
 import { CharacterDetailsComponent } from './character-details/character-details.component';
+import { RegisterComponent } from './register/register.component';
+import { MatDividerModule } from '@angular/material/divider';
 
 @NgModule({
   declarations: [
@@ -56,6 +58,7 @@ import { CharacterDetailsComponent } from './character-details/character-details
     SanitizerUrlPipe,
     CapitalizeCasePipe,
     CharacterDetailsComponent,
+    RegisterComponent,
   ],
   imports: [
     BrowserModule,
@@ -81,6 +84,7 @@ import { CharacterDetailsComponent } from './character-details/character-details
     MatProgressBarModule,
     MatMenuModule,
     MatRippleModule,
+    MatDividerModule,
   ],
   providers: [
     [CookieService],

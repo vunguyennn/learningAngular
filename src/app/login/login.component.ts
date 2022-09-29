@@ -1,17 +1,7 @@
 import { Component, OnInit } from '@angular/core';
-import {
-  MatSnackBar,
-  MatSnackBarHorizontalPosition,
-  MatSnackBarVerticalPosition,
-} from '@angular/material/snack-bar';
+import { MatSnackBar } from '@angular/material/snack-bar';
 import { ActivatedRoute, Router } from '@angular/router';
-import {
-  AccountService,
-  CharacterService,
-  ElementService,
-  SNACKBAR_POSITION,
-  WeaponTypeService,
-} from '@pendo/services';
+import { AccountService, SNACKBAR_POSITION } from '@pendo/services';
 import { finalize, tap } from 'rxjs';
 
 @Component({
@@ -37,6 +27,7 @@ export class LoginComponent implements OnInit {
 
   ngOnInit(): void {
     this.redirectUrl = this.route.snapshot.queryParams['returnUrl'] || 'home';
+    console.log('😎 ~ this.redirectUrl', this.redirectUrl);
   }
 
   async handleLogin() {
@@ -60,5 +51,9 @@ export class LoginComponent implements OnInit {
         finalize(() => (this.loading = false))
       )
       .subscribe();
+  }
+
+  registerNavigate() {
+    this.router.navigate(['register']);
   }
 }

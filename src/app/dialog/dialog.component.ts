@@ -138,7 +138,7 @@ export class DialogComponent implements OnInit, OnDestroy {
         weaponType: weapon,
         imgUrl,
       });
-      console.log(this.productForm.value);
+      console.log('😎 ~ this.productForm', this.productForm.value);
     }
   }
 

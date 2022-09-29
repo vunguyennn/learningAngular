@@ -28,6 +28,7 @@ import {
   take,
   throwError,
 } from 'rxjs';
+
 @Injectable()
 export class TokenInterceptor implements HttpInterceptor {
   // prevent calling multiple refresh token apis
@@ -50,6 +51,7 @@ export class TokenInterceptor implements HttpInterceptor {
   ): Observable<HttpEvent<any>> {
     const accessToken = this.cookieService.get(ACCESS_TOKEN);
     const refreshToken = this.cookieService.get(REFRESH_TOKEN);
+
     const requestOptions: any = {
       url: `https://pendo-api-eu.herokuapp.com/${request.url}`,
     };
@@ -74,8 +76,6 @@ export class TokenInterceptor implements HttpInterceptor {
             return this.accountService.refreshToken(refreshToken).pipe(
               switchMap((tokens) => {
                 this.accessToken$.next(tokens.accessToken);
-                this.cookieService.set(ACCESS_TOKEN, tokens.accessToken);
-                this.cookieService.set(REFRESH_TOKEN, tokens.refreshToken);
 
                 const requestWithNewTokens = request.clone({
                   ...requestOptions,

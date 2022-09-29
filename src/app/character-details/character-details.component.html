@@ -1,17 +1,22 @@
-<div *ngIf="character">
-  <div class="characters__wrapper">
-    <div class="character">
-      <div class="character__image">
-        <img [src]="character.imgUrl" class="character" />
-        <img [src]="character.elementUrl" class="element" />
+<ng-container *ngIf="activeCharacter">
+  <div>
+    <div class="characters__wrapper">
+      <div class="character">
+        <div class="character__image">
+          <img [src]="activeCharacter.imgUrl" class="character" />
+          <img [src]="activeCharacter.elementUrl" class="element" />
+        </div>
       </div>
+      <h1 class="character__title">
+        {{ activeCharacter.name | capitalizeCase }} ({{
+          activeCharacter.rarity
+        }}
+        ★)
+        <div class="weapon__wrapper">
+          <p>{{ activeCharacter.weaponName }}</p>
+          <img [src]="activeCharacter.weaponUrl" />
+        </div>
+      </h1>
     </div>
-    <h1 class="character__title">
-      {{ character.name | capitalizeCase }} ({{ character.rarity }}★)
-      <img [src]="character.weaponUrl" />
-    </h1>
   </div>
-  <div class="weapons__wrapper">
-    <h2>Weapon</h2>
-  </div>
-</div>
+</ng-container>

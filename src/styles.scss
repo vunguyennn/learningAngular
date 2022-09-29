@@ -10,3 +10,20 @@ body {
   margin: 0;
   font-family: Roboto, "Helvetica Neue", sans-serif;
 }
+
+::-webkit-scrollbar {
+  width: 4px;
+  background-color: rgba(0, 0, 0, 0);
+  -webkit-border-radius: 80px;
+}
+::-webkit-scrollbar:hover {
+  background-color: rgba(0, 0, 0, 0.09);
+}
+::-webkit-scrollbar-thumb:vertical {
+  background: rgba(0, 0, 0, 0.61);
+  -webkit-border-radius: 80px;
+}
+::-webkit-scrollbar-thumb:vertical:active {
+  background: rgba(0, 0, 0, 0.61);
+  -webkit-border-radius: 80px;
+}

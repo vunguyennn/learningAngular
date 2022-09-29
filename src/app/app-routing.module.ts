@@ -5,10 +5,15 @@ import { CharacterDetailsComponent } from './character-details/character-details
 import { HomeComponent } from './home/home.component';
 import { LoginComponent } from './login/login.component';
 import { NotFoundComponent } from './not-found/not-found.component';
+import { RegisterComponent } from './register/register.component';
 import { WelcomeComponent } from './welcome/character.component';
 
 const routes: Routes = [
-  { path: 'home', component: HomeComponent, canActivate: [RouteGuardService] },
+  {
+    path: 'home',
+    component: HomeComponent,
+    canActivate: [RouteGuardService],
+  },
   {
     path: 'login',
     component: LoginComponent,
@@ -18,6 +23,11 @@ const routes: Routes = [
     component: WelcomeComponent,
     canActivate: [RouteGuardService],
   },
+  {
+    path: 'register',
+    component: RegisterComponent,
+  },
+
   {
     path: 'character/:name',
     component: CharacterDetailsComponent,

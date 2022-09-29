@@ -67,7 +67,7 @@ export class WelcomeComponent implements OnInit, OnDestroy {
         // only handle available data case
         //! check until 2 observable done emitting value then handle data
         filter(([characters, elements]) => {
-          return !!characters.length && !!elements.length;
+          return !!characters?.length && !!elements?.length;
         }),
         // return the array with value of observable array use in combineLatest
         tap((result) => {
@@ -97,7 +97,8 @@ export class WelcomeComponent implements OnInit, OnDestroy {
       .subscribe();
   }
 
-  detailsNavigate(name: string) {
-    this.router.navigate(['character', name]);
+  detailsNavigate(char: Character) {
+    this.characterService.setActiveCharacter(char.id);
+    this.router.navigate(['character', char.name.trim().toLowerCase()]);
   }
 }
