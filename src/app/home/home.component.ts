@@ -1,4 +1,10 @@
-import { AfterViewInit, Component, OnInit, ViewChild } from '@angular/core';
+import {
+  AfterViewInit,
+  Component,
+  ElementRef,
+  OnInit,
+  ViewChild,
+} from '@angular/core';
 
 import { FormGroup } from '@angular/forms';
 import { MatDialog } from '@angular/material/dialog';
@@ -20,11 +26,15 @@ import {
 } from '@pendo/services';
 import {
   combineLatest,
+  debounceTime,
+  distinctUntilChanged,
   filter,
   finalize,
   firstValueFrom,
+  fromEvent,
   map,
   Observable,
+  startWith,
   Subject,
   takeUntil,
   tap,
@@ -32,6 +42,7 @@ import {
 import { DeleteConfirmationDialogComponent } from '../delete-confirmation-dialog/delete-confirmation-dialog.component';
 import { DialogComponent } from '../dialog/dialog.component';
 import * as _ from 'lodash';
+import { MatSelect } from '@angular/material/select';
 
 @Component({
   selector: 'home',
@@ -41,6 +52,9 @@ import * as _ from 'lodash';
 export class HomeComponent implements OnInit {
   @ViewChild(MatPaginator) paginator: MatPaginator;
   @ViewChild(MatSort) sort: MatSort;
+  @ViewChild('weapon') weapon: MatSelect;
+  @ViewChild('element') element: MatSelect;
+  @ViewChild('inputName') inputName: ElementRef;
 
   title = 'token-interceptor';
   horizontalPosition: MatSnackBarHorizontalPosition = 'start';
@@ -51,7 +65,6 @@ export class HomeComponent implements OnInit {
   displayedColumns: string[] = ['img', 'name', 'element', 'weapon', 'action'];
   chars: Character[] = [];
   dataSource = new MatTableDataSource<Character>();
-  filterData = new MatTableDataSource<Character>();
   elements: Element[] = [];
   imgUrl: UploadImageReq[] = [];
   weaponTypes: WeaponType[] = [];
@@ -118,14 +131,17 @@ export class HomeComponent implements OnInit {
           }) as Character[];
         }),
         tap((characters) => {
-          this.dataSource.data = characters;
-          this.filterData = this.dataSource;
-
+          this.characters = characters;
+          this.dataSource.data = this.characters;
           console.log('😎 ~ this.dataSource.data', this.dataSource.data);
-
           setTimeout(() => {
             this.dataSource.paginator = this.paginator;
           }, 0);
+        }),
+        // Listen to changes after data init
+        // => set data for initialize value of dropdowns
+        tap(() => {
+          this.listenElements();
         }),
         tap(() => (this.initializing = false))
         //! combineLatest doesn't use finalize bz it always listen until the time it being complete (takeUntil(this.destroy$))
@@ -147,13 +163,60 @@ export class HomeComponent implements OnInit {
     // this.weaponTypes$ = this.weaponTypeService.weaponTypes$$;
   }
 
-  applyFilter(event: Event) {
-    const filterValue = (event.target as HTMLInputElement).value;
-    this.dataSource.filter = filterValue.trim().toLowerCase();
-    if (this.dataSource.paginator) {
-      this.dataSource.paginator.firstPage();
-    }
+  listenElements() {
+    const initElement = -1;
+    const initWeaponType = -1;
+
+    combineLatest([
+      this.element.valueChange.pipe(startWith(initElement)),
+      this.weapon.valueChange.pipe(startWith(initWeaponType)),
+      //! add 1 more obs here for search
+      fromEvent(this.inputName.nativeElement, 'input')
+        //! Use debounce, distinctUntilChanged if fetch api on search
+        // debounceTime(500),
+        // distinctUntilChanged(),
+        .pipe(startWith('')),
+    ])
+      .pipe(
+        takeUntil(this.destroy$),
+        tap(([element, weaponType, search]) => {
+          const keyword =
+            typeof search === 'string'
+              ? ''
+              : ((search as any).target.value as string).toLowerCase().trim();
+          console.log('😎 ~ keyword', keyword);
+          console.log('😎 ~ search', search);
+          this.dataSource.data = this.characters.filter((character) => {
+            const searchCondition = () =>
+              character.name.toLowerCase().trim().includes(keyword);
+            let filterCondition: Function;
+
+            if (element === -1 && weaponType === -1) {
+              filterCondition = null;
+            } else if (element === -1) {
+              filterCondition = () => character.weapon === weaponType;
+            } else if (weaponType === -1) {
+              filterCondition = () => character.element === element;
+            } else {
+              filterCondition = () =>
+                character.element === element &&
+                character.weapon === weaponType;
+            }
+
+            return filterCondition
+              ? searchCondition() && filterCondition()
+              : searchCondition();
+          });
+          console.log('😎 ~ weapon', weaponType);
+          console.log('😎 ~ element', element);
+        })
+      )
+      .subscribe();
+
+    this.element.value = initElement;
+    this.weapon.value = initWeaponType;
   }
+
   // character can be passed or not (if not -> null)
   // edit & create
   storeCharacter(character?: Character) {
@@ -291,18 +354,5 @@ export class HomeComponent implements OnInit {
         elementName: element.name,
       };
     }) as Character[];
-  }
-
-  filterElement($event: any) {
-    const filteredData = _.filter(this.filterData.data, (item) => {
-      return item.elementName == $event.value;
-    });
-    this.dataSource = new MatTableDataSource(filteredData);
-  }
-  filterWeapon($event: any) {
-    const filteredData = _.filter(this.filterData.data, (item) => {
-      return item.weaponName == $event.value;
-    });
-    this.dataSource = new MatTableDataSource(filteredData);
   }
 }

@@ -1,7 +1,6 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 import { RouteGuardService } from '@pendo/services';
-import { RoleGuard } from 'src/services/role.guard';
 import { CharacterDetailsComponent } from './character-details/character-details.component';
 import { HomeComponent } from './home/home.component';
 import { LoginComponent } from './login/login.component';
@@ -13,7 +12,7 @@ const routes: Routes = [
   {
     path: 'home',
     component: HomeComponent,
-    canActivate: [RouteGuardService, RoleGuard],
+    canActivate: [RouteGuardService],
   },
   {
     path: 'login',

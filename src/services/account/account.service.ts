@@ -15,11 +15,13 @@ import {
   providedIn: 'root',
 })
 export class AccountService {
+  private account$ = new BehaviorSubject<Account>(null);
+  account$$ = this.account$.asObservable();
+  setAccount(account: Account) {
+    this.account$.next(account);
+  }
+
   loggedIn$ = new BehaviorSubject<boolean>(false);
-  isAdmin$ = new BehaviorSubject<boolean>(false);
-  userName$ = new BehaviorSubject<string>('');
-  accessToken = this.cookieService.get(ACCESS_TOKEN);
-  decodedToken = this.getDecodedAccessToken(this.accessToken);
 
   constructor(private http: HttpClient, private cookieService: CookieService) {}
 
@@ -35,6 +37,12 @@ export class AccountService {
     const accessToken = this.cookieService.get(ACCESS_TOKEN);
     const refreshToken = this.cookieService.get(REFRESH_TOKEN);
     const isLoggedIn = !!(accessToken && refreshToken);
+    const decodedToken = this.getDecodedAccessToken(accessToken);
+    console.log('😎 ~ decodedToken', decodedToken);
+    this.setAccount({
+      username: decodedToken.username,
+      isAdmin: decodedToken.isAdmin,
+    });
     this.loggedIn$.next(isLoggedIn);
     return isLoggedIn;
   }
@@ -45,8 +53,13 @@ export class AccountService {
         this.cookieService.set(ACCESS_TOKEN, accessToken);
         this.cookieService.set(REFRESH_TOKEN, refreshToken);
         const decodedToken = this.getDecodedAccessToken(accessToken);
-        this.isAdmin$.next(decodedToken.isAdmin);
-        this.userName$.next(decodedToken.username);
+        console.log('😎 ~ decodedToken', decodedToken);
+
+        this.setAccount({
+          username: decodedToken.username,
+          isAdmin: decodedToken.isAdmin,
+        });
+
         this.loggedIn$.next(true);
       })
     );
@@ -67,7 +80,21 @@ export class AccountService {
   }
 
   refreshToken(refreshToken: string) {
-    return this.http.post<LoginRes>('api/account/refresh', { refreshToken });
+    return this.http
+      .post<LoginRes>('api/account/refresh', { refreshToken })
+      .pipe(
+        tap((tokens) => {
+          this.cookieService.set(ACCESS_TOKEN, tokens.accessToken);
+          this.cookieService.set(REFRESH_TOKEN, tokens.refreshToken);
+          const decodedToken = this.getDecodedAccessToken(tokens.accessToken);
+          console.log('😎 ~ decodedToken', decodedToken);
+
+          this.setAccount({
+            username: decodedToken.username,
+            isAdmin: decodedToken.isAdmin,
+          });
+        })
+      );
   }
 
   getAccessToken() {

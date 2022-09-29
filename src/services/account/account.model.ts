@@ -1,6 +1,7 @@
 export interface Account {
   username: string;
-  password: string;
+  password?: string;
+  isAdmin?: string;
 }
 
 export interface LoginRes {

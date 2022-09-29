@@ -4,16 +4,15 @@ import {
   Character,
   CharacterService,
   ElementService,
-  WeaponService,
-  WeaponType,
   WeaponTypeService,
 } from '@pendo/services';
 import {
   combineLatest,
   filter,
   first,
-  forkJoin,
+  firstValueFrom,
   map,
+  Observable,
   Subject,
   takeUntil,
   tap,
@@ -26,28 +25,29 @@ import {
 })
 export class CharacterDetailsComponent implements OnInit {
   constructor(
-    private route: ActivatedRoute,
     private characterService: CharacterService,
+    private route: ActivatedRoute,
     private elementService: ElementService,
     private weaponTypeService: WeaponTypeService
   ) {}
 
   destroy$ = new Subject();
-  elements: Element[] = [];
-  characters: Character[] = [];
-  weaponTypes: WeaponType[] = [];
-  character: Character;
+  activeCharacter: Character;
 
-  ngOnDestroy(): void {
-    this.destroy$.next(true);
-    this.destroy$.complete();
-  }
+  async ngOnInit(): Promise<void> {
+    const activeCharacter: Character = await firstValueFrom(
+      this.characterService.activeCharacter$$
+    );
 
-  ngOnInit(): void {
-    //https://stackoverflow.com/questions/41138081/do-i-have-to-unsubscribe-from-activatedroute-e-g-params-observables
-    const { name } = this.route.snapshot.params;
-    const lowerName = (name as string).toLowerCase().trim();
-    console.log('😎 ~ lowerName', lowerName);
+    let name: string;
+
+    if (activeCharacter) {
+      name = activeCharacter.name.toLowerCase().trim();
+    } else {
+      //https://stackoverflow.com/questions/41138081/do-i-have-to-unsubscribe-from-activatedroute-e-g-params-observables
+      const { name: nameParam } = this.route.snapshot.params;
+      name = nameParam.toLowerCase().trim();
+    }
 
     combineLatest([
       this.characterService.characters$$,
@@ -55,33 +55,26 @@ export class CharacterDetailsComponent implements OnInit {
       this.weaponTypeService.weaponTypes$$,
     ])
       .pipe(
-        takeUntil(this.destroy$),
         filter(([characters, elements, weaponTypes]) => {
           return (
-            !!characters.length && !!elements.length && !!weaponTypes.length
+            !!characters?.length && !!elements?.length && !!weaponTypes?.length
           );
         }),
-        map(([characters, elements, weaponTypes]) => {
-          this.weaponTypes = weaponTypes;
-          this.elements = elements;
+        first(),
+        tap(([characters, elements, weaponTypes]) => {
+          const character = characters.find(
+            (c) => c.name.toLowerCase().trim() === name
+          );
+          const weapon = weaponTypes.find((el) => character.weapon === el.id);
+          const element = elements.find((el) => character.element === el.id);
 
-          return characters.map((char) => {
-            const weapon = weaponTypes.find((el) => char.weapon === el.id);
-            const element = elements.find((el) => char.element === el.id);
-            return {
-              ...char,
-              weaponName: weapon.name,
-              elementName: element.name,
-              elementUrl: element.iconUrl,
-              weaponUrl: weapon.iconUrl,
-            };
-          }) as Character[];
-        }),
-        tap((characters) => {
-          this.character = characters.find((character) => {
-            return character.name.toLowerCase().trim() === lowerName;
-          });
-          console.log('😎 ~ this.character', this.character);
+          character.weaponUrl = weapon.iconUrl;
+          character.weaponName = weapon.name;
+          character.elementUrl = element.iconUrl;
+          character.elementName = element.name;
+
+          this.activeCharacter = character;
+          console.log('😎 ~ this.activeCharacter', this.activeCharacter);
         })
       )
       .subscribe();

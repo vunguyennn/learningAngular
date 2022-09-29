@@ -9,7 +9,11 @@
   >
     <mat-icon>menu</mat-icon>
     <mat-menu #belowMenu="matMenu" yPosition="below">
-      <button mat-menu-item routerLink="/">
+      <button
+        mat-menu-item
+        routerLink="/"
+        *ngIf="(accountService.account$$ | async)?.isAdmin"
+      >
         <mat-icon>home</mat-icon>
         Home
       </button>
@@ -19,7 +23,9 @@
       </button>
     </mat-menu>
   </button>
-  <span>My App </span>
+  <span *ngIf="accountService.account$$ | async as account"
+    >Hello {{ account?.username }}</span
+  >
 
   <span class="example-spacer"></span>
 
@@ -36,7 +42,6 @@
   </button>
   <mat-menu #menu="matMenu">
     <p>
-      {{ accountService.userName$ | async }}
       <button class="button__logout" (click)="logout()" mat-menu-item>
         <mat-icon>logout</mat-icon>
         Log out

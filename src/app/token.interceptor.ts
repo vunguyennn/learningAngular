@@ -76,8 +76,6 @@ export class TokenInterceptor implements HttpInterceptor {
             return this.accountService.refreshToken(refreshToken).pipe(
               switchMap((tokens) => {
                 this.accessToken$.next(tokens.accessToken);
-                this.cookieService.set(ACCESS_TOKEN, tokens.accessToken);
-                this.cookieService.set(REFRESH_TOKEN, tokens.refreshToken);
 
                 const requestWithNewTokens = request.clone({
                   ...requestOptions,
