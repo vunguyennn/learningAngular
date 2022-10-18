@@ -5,6 +5,7 @@ import {
   AccountService,
   CharacterService,
   ElementService,
+  WeaponService,
   WeaponTypeService,
 } from '@pendo/services';
 import {
@@ -17,6 +18,7 @@ import {
   takeUntil,
   tap,
 } from 'rxjs';
+import { SkillService } from 'src/services/skill/skill.service';
 
 @Component({
   selector: 'app-root',
@@ -33,7 +35,9 @@ export class AppComponent implements OnInit, OnDestroy {
     private elementService: ElementService,
     private weaponTypeService: WeaponTypeService,
     private accountService: AccountService,
-    private router: Router
+    private router: Router,
+    private weaponService: WeaponService,
+    private skillService: SkillService
   ) {}
   //! App component will load first
   //! Check if user logged in (in route guard)
@@ -58,11 +62,30 @@ export class AppComponent implements OnInit, OnDestroy {
             this.router.navigate(['/']);
           }
 
-          const characters = await firstValueFrom(this.characterService.characters$$.pipe(first()));
-          const elements = await firstValueFrom(this.elementService.elements$$.pipe(first()));
-          const weaponTypes = await firstValueFrom(this.weaponTypeService.weaponTypes$$.pipe(first()));
+          const characters = await firstValueFrom(
+            this.characterService.characters$$.pipe(first())
+          );
+          const elements = await firstValueFrom(
+            this.elementService.elements$$.pipe(first())
+          );
+          const weaponTypes = await firstValueFrom(
+            this.weaponTypeService.weaponTypes$$.pipe(first())
+          );
+          const weapons = await firstValueFrom(
+            this.weaponService.weapon$$.pipe(first())
+          );
+          const skills = await firstValueFrom(
+            this.skillService.skill$$.pipe(first())
+          );
 
-          if (this.afterInit && characters !== null && elements !== null && weaponTypes !== null) {
+          if (
+            this.afterInit &&
+            characters !== null &&
+            elements !== null &&
+            weaponTypes !== null &&
+            weapons !== null &&
+            skills !== null
+          ) {
             return;
           }
 
@@ -71,6 +94,8 @@ export class AppComponent implements OnInit, OnDestroy {
             this.characterService.getCharacters().subscribe();
             this.elementService.getElements().subscribe();
             this.weaponTypeService.getWeaponType().subscribe();
+            this.weaponService.getWeapon().subscribe();
+            this.skillService.getSkill().subscribe();
           }
         })
       )

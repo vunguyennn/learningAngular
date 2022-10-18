@@ -31,6 +31,7 @@ export class DialogComponent implements OnInit, OnDestroy {
 
   productForm!: FormGroup;
   actionBtn = 'Add';
+  destroy$ = new Subject();
   dialogTitle = 'Add Character';
   dataSource = new MatTableDataSource();
   horizontalPosition: MatSnackBarHorizontalPosition = 'start';
@@ -43,7 +44,6 @@ export class DialogComponent implements OnInit, OnDestroy {
   // weaponTypes: WeaponType[] = []; => change to use async pipe
   // character: Character;
 
-  destroy$ = new Subject();
   // create an observable property
   weaponTypes$: Observable<WeaponType[]>;
   elements$: Observable<Element[]>;
@@ -65,7 +65,7 @@ export class DialogComponent implements OnInit, OnDestroy {
       name: ['', Validators.required],
       element: ['', Validators.required],
       weaponType: ['', Validators.required],
-      imgUrl: ['', Validators.required],
+      imgUrl: [''],
     });
   }
 
@@ -147,8 +147,17 @@ export class DialogComponent implements OnInit, OnDestroy {
     // const formValue = this.productForm.getRawValue();
     // has to call formValue.id, formValue.name, ...
     //* -> use destructuring:
-    const { id, name, element, weaponType, imgUrl, elementUrl } =
-      this.productForm.getRawValue();
+    const {
+      id,
+      name,
+      element,
+      weaponType,
+      imgUrl,
+      elementUrl,
+      description,
+      skills,
+      recommendWeapons,
+    } = this.productForm.getRawValue();
 
     //! this.productForm.getRawValue():
     //! id
@@ -164,7 +173,7 @@ export class DialogComponent implements OnInit, OnDestroy {
     //* imgUrl
     //! Solution 1: rename form control from weaponType -> weapon
     //! Solution 2: create new character data in this function (recommend)
-    const character: Character = {
+    const character: Partial<Character> = {
       // if key === value
       // id: id => id
       id: id,
@@ -173,6 +182,9 @@ export class DialogComponent implements OnInit, OnDestroy {
       weapon: weaponType,
       imgUrl: imgUrl,
       elementUrl: elementUrl,
+      description: description,
+      skills: skills,
+      recommendWeapons: recommendWeapons,
     };
 
     // if previewImg is existed => upload new image

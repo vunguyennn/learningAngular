@@ -97,8 +97,9 @@ export class WelcomeComponent implements OnInit, OnDestroy {
       .subscribe();
   }
 
+  // 1
   detailsNavigate(char: Character) {
-    this.characterService.setActiveCharacter(char.id);
+    this.characterService.setActiveCharacter(char.id); // 1
     this.router.navigate(['character', char.name.trim().toLowerCase()]);
   }
 }

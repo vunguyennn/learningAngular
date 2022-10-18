@@ -8,46 +8,59 @@
 <h1>Sign up</h1>
 <div class="d-flex-center">
   <body class="mt-top-2">
-    <div>
-      <mat-form-field>
-        <mat-label>Username</mat-label>
-        <input matInput [(ngModel)]="username" />
-      </mat-form-field>
-    </div>
-
-    <div>
-      <mat-form-field>
-        <mat-label>Password</mat-label>
-        <input
-          matInput
-          [(ngModel)]="password"
-          [type]="hide ? 'password' : 'text'"
-        />
-        <button
-          mat-icon-button
-          matSuffix
-          (click)="hide = !hide"
-          [attr.aria-label]="'Hide password'"
-          [attr.aria-pressed]="hide"
-        >
-          <mat-icon>{{ hide ? "visibility_off" : "visibility" }}</mat-icon>
-        </button>
-      </mat-form-field>
-    </div>
-
-    <div class="button__divider"></div>
-
-    <button
-      (click)="register()"
-      [loading]="loading"
-      [disabled]="loading"
-      [btnContent]="'Register'"
-      class="button__register"
-      color="primary"
-      mat-raised-button
-    >
-      Register
-    </button>
+    <form class="sign-in-form" [formGroup]="regisForm">
+      <div class="row-control">
+        <mat-form-field appearance="outline">
+          <mat-label>Username</mat-label>
+          <input matInput placeholder="Username" formControlName="username" />
+        </mat-form-field>
+      </div>
+      <mat-error
+        *ngIf="
+          !regisForm.get('username').valid && regisForm.get('username').touched
+        "
+      >
+        Enter your username.</mat-error
+      >
+      <div class="row-control">
+        <mat-form-field appearance="outline">
+          <mat-label>Password</mat-label>
+          <input
+            matInput
+            [type]="hide ? 'password' : 'text'"
+            placeholder="Password"
+            formControlName="password"
+          />
+          <button
+            mat-icon-button
+            matSuffix
+            (click)="hide = !hide"
+            [attr.aria-label]="'Hide password'"
+            [attr.aria-pressed]="hide"
+          >
+            <mat-icon>{{ hide ? "visibility_off" : "visibility" }}</mat-icon>
+          </button>
+        </mat-form-field>
+      </div>
+      <mat-error
+        *ngIf="
+          !regisForm.get('password').valid && regisForm.get('password').touched
+        "
+      >
+        Enter your password.</mat-error
+      >
+      <button
+        (click)="register()"
+        [loading]="loading"
+        [disabled]="loading || !regisForm.valid"
+        [btnContent]="'Register'"
+        class="button__register"
+        color="primary"
+        mat-raised-button
+      >
+        Register
+      </button>
+    </form>
 
     <p class="button__register">
       Already have an account? <a routerLink="/">Sign in</a>

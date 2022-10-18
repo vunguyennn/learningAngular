@@ -36,6 +36,7 @@ import {
   Observable,
   startWith,
   Subject,
+  take,
   takeUntil,
   tap,
 } from 'rxjs';
@@ -52,9 +53,9 @@ import { MatSelect } from '@angular/material/select';
 export class HomeComponent implements OnInit {
   @ViewChild(MatPaginator) paginator: MatPaginator;
   @ViewChild(MatSort) sort: MatSort;
-  @ViewChild('weapon', {static: true}) weapon: MatSelect;
-  @ViewChild('element', {static: true}) element: MatSelect;
-  @ViewChild('inputName', {static: true}) inputName: ElementRef;
+  @ViewChild('weapon', { static: true }) weapon: MatSelect;
+  @ViewChild('element', { static: true }) element: MatSelect;
+  @ViewChild('inputName', { static: true }) inputName: ElementRef;
 
   title = 'token-interceptor';
   horizontalPosition: MatSnackBarHorizontalPosition = 'start';
@@ -102,6 +103,7 @@ export class HomeComponent implements OnInit {
     ])
       .pipe(
         takeUntil(this.destroy$),
+        // take(3),
         // only handle available data case
         //! check until 3 observable done emitting value then handle data
         filter(([characters, elements, weaponTypes]) => {
@@ -120,14 +122,9 @@ export class HomeComponent implements OnInit {
 
           // Add interface for strict map value
           return characters.map((char) => {
-            const weapon = weaponTypes.find((el) => char.weapon === el.id);
-            const element = elements.find((el) => char.element === el.id);
-            return {
-              ...char,
-              weaponName: weapon.name,
-              // element: element?.name, // No element field
-              elementName: element.name,
-            };
+            char.mapElement(elements);
+            char.mapWeaponType(weaponTypes);
+            return char;
           }) as Character[];
         }),
         tap((characters) => {
@@ -274,6 +271,7 @@ export class HomeComponent implements OnInit {
             this.characterService
               .deleteAllCharacters()
               .pipe(
+                // _ is don't care what response is
                 tap(async (_) => {
                   const characters = await firstValueFrom(
                     this.characterService.getCharacters()
@@ -292,7 +290,7 @@ export class HomeComponent implements OnInit {
   async openDialogDelete(character: Character) {
     const message = `Are u sure deleting ${character.name}?`;
 
-    // Not delete in confirm delete dialog
+    // Not delete in confirm Delete dialog
     // Confirm ok => delete outside => reuse this component at others
     this.dialog
       .open(DeleteConfirmationDialogComponent, {

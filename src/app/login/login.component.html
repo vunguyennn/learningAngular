@@ -1,54 +1,62 @@
-<img
-  class="text-center"
-  width="400"
-  height="400"
-  src="/assets/hillichurls.jpg"
-  alt="image"
-/>
+<img class="login__image" src="/assets/hillichurls.jpg" alt="image" />
 
 <div class="d-flex-center">
   <body class="mt-top-2">
-    <div>
-      <mat-form-field>
-        <mat-label>Username</mat-label>
-        <input matInput [(ngModel)]="username" />
-      </mat-form-field>
-    </div>
-
-    <div>
-      <mat-form-field>
-        <mat-label>Password</mat-label>
-        <input
-          matInput
-          [(ngModel)]="password"
-          [type]="hide ? 'password' : 'text'"
-        />
-        <button
-          mat-icon-button
-          matSuffix
-          (click)="hide = !hide"
-          [attr.aria-label]="'Hide password'"
-          [attr.aria-pressed]="hide"
-        >
-          <mat-icon>{{ hide ? "visibility_off" : "visibility" }}</mat-icon>
-        </button>
-      </mat-form-field>
-    </div>
-
-    <button
-      class="button__login"
-      [loading]="loading"
-      [disabled]="loading"
-      [btnContent]="'Login'"
-      color="primary"
-      mat-raised-button
-      (click)="handleLogin()"
-    ></button>
+    <form class="sign-in-form" [formGroup]="signInForm">
+      <div class="row-control">
+        <mat-form-field appearance="outline">
+          <mat-label>Username</mat-label>
+          <input matInput placeholder="Username" formControlName="username" />
+        </mat-form-field>
+      </div>
+      <mat-error
+        *ngIf="
+          !signInForm.get('username').valid &&
+          signInForm.get('username').touched
+        "
+      >
+        Enter your username.</mat-error
+      >
+      <div class="row-control">
+        <mat-form-field appearance="outline">
+          <mat-label>Password</mat-label>
+          <input
+            [type]="hide ? 'password' : 'text'"
+            matInput
+            placeholder="Password"
+            formControlName="password"
+          />
+          <button
+            mat-icon-button
+            matSuffix
+            (click)="hide = !hide"
+            [attr.aria-label]="'Hide password'"
+            [attr.aria-pressed]="hide"
+          >
+            <mat-icon>{{ hide ? "visibility_off" : "visibility" }}</mat-icon>
+          </button>
+        </mat-form-field>
+      </div>
+      <mat-error
+        *ngIf="
+          !signInForm.get('password').valid &&
+          signInForm.get('password').touched
+        "
+      >
+        Enter your password.</mat-error
+      >
+      <button
+        class="button__login"
+        [loading]="loading"
+        [disabled]="loading || !signInForm.valid"
+        [btnContent]="'Login'"
+        color="primary"
+        mat-raised-button
+        (click)="handleLogin()"
+      ></button>
+    </form>
 
     <div class="button__divider">
-      <mat-card-title>
-        <p style="font-size: 15px; color: black; margin-top: 25px">or</p>
-      </mat-card-title>
       <mat-divider></mat-divider>
     </div>
 

@@ -4,7 +4,6 @@
       <div class="character">
         <div class="character__image">
           <img [src]="activeCharacter.imgUrl" class="character" />
-          <img [src]="activeCharacter.elementUrl" class="element" />
         </div>
       </div>
       <h1 class="character__title">
@@ -12,11 +11,38 @@
           activeCharacter.rarity
         }}
         ★)
-        <div class="weapon__wrapper">
-          <p>{{ activeCharacter.weaponName }}</p>
-          <img [src]="activeCharacter.weaponUrl" />
+        <img [src]="activeCharacter.elementUrl" class="element" />
+
+        <div class="character__wrapper">
+          <p>{{ activeCharacter.description }}</p>
         </div>
       </h1>
     </div>
+  </div>
+  <div class="skills__title">
+    <h1>Skills</h1>
+  </div>
+  <div class="skills__content">
+    <div class="skills__wrapper" *ngFor="let skill of activeCharacter.skills">
+      <app-skill
+        [skillImgUrl]="skill.iconUrl"
+        [skillName]="skill.name"
+        [skillDes]="skill.description"
+      ></app-skill>
+    </div>
+  </div>
+  <div class="recommend__weapon__wrapper">
+    <h1>Recommend Weapons</h1>
+    <img class="recommend__weapon__image" [src]="activeCharacter.weaponUrl" />
+  </div>
+  <div class="weapon__wrapper">
+    <app-weapon
+      *ngFor="let recWeapon of activeCharacter.recommendWeapons"
+      [recWeaponUrl]="activeCharacter.weaponUrl"
+      [weaponName]="recWeapon.name"
+      [weaponDescription]="recWeapon.description"
+      [weaponRarity]="recWeapon.rarity"
+      [weaponUrl]="recWeapon.iconUrl"
+    ></app-weapon>
   </div>
 </ng-container>

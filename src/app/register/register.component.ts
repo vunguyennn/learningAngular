@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { ActivatedRoute, Route, Router } from '@angular/router';
 import { Account, AccountService, SNACKBAR_POSITION } from '@pendo/services';
@@ -10,8 +11,11 @@ import { finalize, tap } from 'rxjs';
   styleUrls: ['./register.component.scss'],
 })
 export class RegisterComponent implements OnInit {
-  username = 'vunguyen';
-  password = '123456';
+  regisForm = new FormGroup({
+    username: new FormControl('', Validators.required),
+    password: new FormControl('', Validators.required),
+  });
+
   errorMessageLogin = 'Invalid username or password';
   invalidLogin = false;
   hide = true;
@@ -26,16 +30,16 @@ export class RegisterComponent implements OnInit {
     private router: Router
   ) {}
 
-  ngOnInit(): void {
-    console.log('😎 ~ this.password', this.password);
-    console.log('😎 ~ this.username', this.username);
-  }
+  ngOnInit(): void {}
 
   register() {
     this.loading = true;
 
     this.accountService
-      .register({ username: this.username, password: this.password })
+      .register({
+        username: this.regisForm.value.username,
+        password: this.regisForm.value.password,
+      })
       .pipe(
         tap((_) => {
           this.snackBar.open(
