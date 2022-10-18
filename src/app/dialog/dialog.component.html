@@ -28,7 +28,20 @@
   <div class="example-container">
     <mat-form-field>
       <mat-label>Name</mat-label>
-      <input formControlName="name" matInput #input placeholder="Razor" />
+      <input
+        formControlName="name"
+        matInput
+        #input
+        placeholder="Razor"
+        pattern="[A-Za-z0-9\s]{1,}"
+      />
+      <mat-error
+        *ngIf="
+          !productForm.get('name').valid && productForm.get('name').touched
+        "
+      >
+        Blank input and special character are not allowed.</mat-error
+      >
     </mat-form-field>
   </div>
 
@@ -41,6 +54,13 @@
         >{{ el.name | capitalizeCase }}</mat-option
       >
     </mat-select>
+    <mat-error
+      *ngIf="
+        !productForm.get('element').valid && productForm.get('element').touched
+      "
+    >
+      Select element.</mat-error
+    >
   </mat-form-field>
 
   <mat-form-field>
@@ -52,6 +72,14 @@
         >{{ el.name | capitalizeCase }}</mat-option
       >
     </mat-select>
+    <mat-error
+      *ngIf="
+        !productForm.get('weaponType').valid &&
+        productForm.get('weaponType').touched
+      "
+    >
+      Select weapon.</mat-error
+    >
   </mat-form-field>
 
   <!-- <div class="example-container">
@@ -63,7 +91,7 @@
     <button mat-button mat-dialog-close>Cancel</button>
     <button
       mat-raised-button
-      [disabled]="loading"
+      [disabled]="loading || productForm.invalid"
       color="primary"
       (click)="save()"
       [loading]="loading"

@@ -1,4 +1,4 @@
-import { NgModule } from '@angular/core';
+import { NgModule, NO_ERRORS_SCHEMA } from '@angular/core';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { BrowserModule } from '@angular/platform-browser';
 
@@ -42,6 +42,9 @@ import { CookieService } from 'ngx-cookie-service';
 import { CharacterDetailsComponent } from './character-details/character-details.component';
 import { RegisterComponent } from './register/register.component';
 import { MatDividerModule } from '@angular/material/divider';
+import { CommonModule } from '@angular/common';
+import { SkillComponent } from './character-details/skill/skill.component';
+import { WeaponComponent } from './character-details/weapon/weapon.component';
 
 @NgModule({
   declarations: [
@@ -59,6 +62,8 @@ import { MatDividerModule } from '@angular/material/divider';
     CapitalizeCasePipe,
     CharacterDetailsComponent,
     RegisterComponent,
+    SkillComponent,
+    WeaponComponent,
   ],
   imports: [
     BrowserModule,
@@ -85,6 +90,7 @@ import { MatDividerModule } from '@angular/material/divider';
     MatMenuModule,
     MatRippleModule,
     MatDividerModule,
+    CommonModule,
   ],
   providers: [
     [CookieService],
@@ -93,5 +99,6 @@ import { MatDividerModule } from '@angular/material/divider';
     CapitalizeCasePipe,
   ],
   bootstrap: [AppComponent],
+  schemas: [NO_ERRORS_SCHEMA],
 })
 export class AppModule {}

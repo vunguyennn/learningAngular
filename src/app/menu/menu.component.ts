@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { Router } from '@angular/router';
 import { AccountService, SNACKBAR_POSITION } from '@pendo/services';
-import { tap } from 'rxjs';
+import { map, tap } from 'rxjs';
 @Component({
   selector: 'app-menu',
   templateUrl: './menu.component.html',

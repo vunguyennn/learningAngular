@@ -1,0 +1,32 @@
+.weapon__wrapper {
+  border: solid;
+  margin: 30px;
+  max-height: 200px;
+  max-width: 750px;
+  display: flex;
+  box-sizing: border-box;
+  border-radius: 20px;
+  border-color: white;
+}
+.weapon__wrapper__weapon {
+  margin: 20px;
+  min-height: 300px;
+  min-width: 720px;
+  gap: 10px;
+  display: flex;
+  word-wrap: break-word;
+
+  .weapon__wrapper__image {
+    height: 150px;
+    width: 150px;
+    border-radius: 40px;
+  }
+  .weapon__wrapper__content {
+    display: block;
+    position: relative;
+    align-items: center;
+  }
+}
+.weapon__wrapper {
+  display: flex;
+}

@@ -4,6 +4,7 @@ import {
   Character,
   CharacterService,
   ElementService,
+  WeaponService,
   WeaponTypeService,
 } from '@pendo/services';
 import {
@@ -11,12 +12,10 @@ import {
   filter,
   first,
   firstValueFrom,
-  map,
-  Observable,
   Subject,
-  takeUntil,
   tap,
 } from 'rxjs';
+import { SkillService } from 'src/services/skill/skill.service';
 
 @Component({
   selector: 'app-character-details',
@@ -28,7 +27,9 @@ export class CharacterDetailsComponent implements OnInit {
     private characterService: CharacterService,
     private route: ActivatedRoute,
     private elementService: ElementService,
-    private weaponTypeService: WeaponTypeService
+    private weaponTypeService: WeaponTypeService,
+    private skillService: SkillService,
+    private weaponService: WeaponService
   ) {}
 
   destroy$ = new Subject();
@@ -53,25 +54,33 @@ export class CharacterDetailsComponent implements OnInit {
       this.characterService.characters$$,
       this.elementService.elements$$,
       this.weaponTypeService.weaponTypes$$,
+      this.skillService.skill$$,
+      this.weaponService.weapon$$,
     ])
       .pipe(
-        filter(([characters, elements, weaponTypes]) => {
+        filter(([characters, elements, weaponTypes, skills, weapons]) => {
           return (
-            !!characters?.length && !!elements?.length && !!weaponTypes?.length
+            !!characters?.length &&
+            !!elements?.length &&
+            !!weaponTypes?.length &&
+            !!skills?.length &&
+            !!weapons?.length
           );
         }),
         first(),
-        tap(([characters, elements, weaponTypes]) => {
+        tap(([characters, elements, weaponTypes, skills, weapons]) => {
           const character = characters.find(
             (c) => c.name.toLowerCase().trim() === name
           );
-          const weapon = weaponTypes.find((el) => character.weapon === el.id);
-          const element = elements.find((el) => character.element === el.id);
 
-          character.weaponUrl = weapon.iconUrl;
-          character.weaponName = weapon.name;
-          character.elementUrl = element.iconUrl;
-          character.elementName = element.name;
+          // If characters not being mapped to class before
+          // These methods below will be error
+          character.mapElement(elements);
+          character.mapWeaponType(weaponTypes);
+          character.mapSkill(skills);
+          character.mapWeapon(weapons);
+
+          // MAP.....
 
           this.activeCharacter = character;
           console.log('😎 ~ this.activeCharacter', this.activeCharacter);

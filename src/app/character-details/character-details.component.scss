@@ -1,9 +1,10 @@
 .characters__wrapper {
   display: flex;
-  gap: 20px;
-  flex-wrap: wrap;
   padding: 16px;
   margin-top: 15px;
+  box-sizing: border-box;
+  border: 0 solid;
+  gap: 20px;
 }
 
 .character {
@@ -50,7 +51,7 @@
   font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
   display: block;
 
-  .weapon__wrapper {
+  .character__wrapper {
     display: flex;
     gap: 16px;
     align-items: center;
@@ -66,4 +67,35 @@
       border-radius: 50%;
     }
   }
+}
+
+.skills__content {
+  display: flex;
+  padding: 16px;
+  margin-top: 15px;
+  box-sizing: border-box;
+  gap: 50px;
+
+  .skills__wrapper {
+    display: flex;
+    padding: 16px;
+    margin-left: 45px;
+    box-sizing: border-box;
+    gap: 200px;
+    max-height: 100px;
+    flex-wrap: wrap;
+    max-width: 100%;
+  }
+}
+.recommend__weapon__wrapper {
+  margin-left: 50px;
+  margin-top: 20px;
+  display: flex;
+}
+.skills__title {
+  margin-left: 50px;
+}
+.weapon__wrapper {
+  display: flex;
+  flex-wrap: wrap;
 }

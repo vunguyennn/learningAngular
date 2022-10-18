@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { ActivatedRoute, Router } from '@angular/router';
 import { AccountService, SNACKBAR_POSITION } from '@pendo/services';
@@ -10,8 +11,11 @@ import { finalize, tap } from 'rxjs';
   styleUrls: ['./login.component.scss'],
 })
 export class LoginComponent implements OnInit {
-  username = 'vunguyen';
-  password = '123456';
+  signInForm = new FormGroup({
+    username: new FormControl('', Validators.required),
+    password: new FormControl('', Validators.required),
+  });
+
   errorMessageLogin = 'Invalid username or password';
   invalidLogin = false;
   hide = true;
@@ -30,13 +34,13 @@ export class LoginComponent implements OnInit {
     console.log('😎 ~ this.redirectUrl', this.redirectUrl);
   }
 
-  async handleLogin() {
+  handleLogin() {
     this.loading = true;
 
     this.accountService
       .login({
-        username: this.username,
-        password: this.password,
+        username: this.signInForm.value.username,
+        password: this.signInForm.value.password,
       })
       .pipe(
         tap((_) => {

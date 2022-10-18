@@ -2,6 +2,7 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import {
   BehaviorSubject,
+  catchError,
   firstValueFrom,
   Observable,
   Subject,
@@ -16,6 +17,7 @@ export class CharacterService {
   // private characters: Character[] = [];
   private characters$ = new BehaviorSubject(null); // set init value
   // private characters$ = new Subject(); // get init value from api
+  // only enable to use operators to get data but not set
   characters$$ = this.characters$.asObservable() as Observable<Character[]>;
 
   setCharacters(characters: Character[]) {
@@ -34,16 +36,21 @@ export class CharacterService {
 
   // http.get<Character[]> ==> the api returns Character[]
   getCharacters(): Observable<Character[]> {
-    return this.http
-      .get<Character[]>('api/char')
-      .pipe(tap((characters) => this.setCharacters(characters)));
+    return this.http.get<Character[]>('api/char').pipe(
+      tap((characters) =>
+        this.setCharacters(
+          // Map data from api's response to class to get methods (mapElement,...)
+          characters.map((character) => new Character(character))
+        )
+      )
+    );
   }
 
-  postCharacter(character: Character) {
+  postCharacter(character: Partial<Character>) {
     return this.http.post<Character[]>('api/char', character);
   }
 
-  updateCharacter(character: Character) {
+  updateCharacter(character: Partial<Character>) {
     return this.http.put<Character[]>(`api/char/${character.id}`, character);
   }
 
